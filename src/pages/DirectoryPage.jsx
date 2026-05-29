@@ -56,7 +56,8 @@ export default function DirectoryPage() {
         .dir-search input:focus { border-color:var(--color-cyan); }
         .dir-search input::placeholder { color:var(--color-text-muted); }
         .dir-search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--color-text-muted); pointer-events:none; }
-        .filter-chips { display:flex; gap:var(--space-2); flex-wrap:wrap; }
+        .filter-chips { display:flex; gap:var(--space-2); flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; -ms-overflow-style:none; }
+        .filter-chips::-webkit-scrollbar { display:none; }
         .chip { padding:5px 12px; border-radius:var(--radius-full); border:1px solid var(--color-border); background:none; color:var(--color-text-muted); font-size:0.72rem; letter-spacing:0.05em; text-transform:uppercase; cursor:pointer; transition:all var(--transition); white-space:nowrap; }
         .chip.active { background:rgba(0,253,255,0.1); border-color:rgba(0,253,255,0.4); color:var(--color-cyan); }
         .chip:hover:not(.active) { border-color:var(--color-text-muted); color:var(--color-text-primary); }
@@ -86,7 +87,17 @@ export default function DirectoryPage() {
         .dir-sidebar-nav a,.dir-sidebar-nav button { display:flex; align-items:center; gap:var(--space-3); padding:10px 12px; border-radius:var(--radius-md); color:var(--color-text-muted); font-size:0.875rem; text-decoration:none; cursor:pointer; background:none; border:none; width:100%; transition:background var(--transition),color var(--transition); }
         .dir-sidebar-nav a:hover,.dir-sidebar-nav button:hover { background:rgba(255,255,255,0.04); color:var(--color-text-primary); }
         .dir-sidebar-nav a.active { background:rgba(0,253,255,0.08); color:var(--color-cyan); }
-        @media(max-width:640px) { .dir-sidebar{display:none} .dir-grid{grid-template-columns:1fr;padding:var(--space-4);} .dir-header{padding:var(--space-4) var(--space-4) 0} }
+        .dir-mobile-topbar { display:none; align-items:center; justify-content:space-between; padding:0 var(--space-4); height:56px; background:var(--color-surface); border-bottom:1px solid var(--color-border); flex-shrink:0; position:sticky; top:0; z-index:20; }
+        .dir-mobile-topbar-title { font-family:var(--font-display); font-size:0.95rem; font-weight:700; color:var(--color-text-primary); }
+        @media(max-width:640px) {
+          .dir-sidebar { display:none; }
+          .dir-mobile-topbar { display:flex; }
+          .dir-grid { grid-template-columns:1fr; padding:var(--space-4); padding-bottom:calc(var(--space-4) + 60px + env(safe-area-inset-bottom)); }
+          .dir-header { padding:var(--space-4) var(--space-4) 0; }
+          .dir-controls { flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; -ms-overflow-style:none; }
+          .dir-controls::-webkit-scrollbar { display:none; }
+          .dir-search { min-width:0; }
+        }
       `}</style>
 
       <div className="dir-shell">
@@ -116,6 +127,15 @@ export default function DirectoryPage() {
 
         {/* Main */}
         <div className="dir-main">
+          {/* Mobile topbar — visible only on small screens */}
+          <div className="dir-mobile-topbar">
+            <GtwLogo size="sidebar" />
+            <span className="dir-mobile-topbar-title">Speakers</span>
+            <Link to="/profile">
+              <img src="https://i.pravatar.cc/36?img=47" alt="Profile" className="avatar avatar-sm" style={{ cursor:'pointer' }} />
+            </Link>
+          </div>
+
           <div className="dir-header">
             <div className="dir-title">Speaker Directory</div>
             <div className="dir-controls">

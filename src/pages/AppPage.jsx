@@ -147,6 +147,11 @@ export default function AppPage() {
         .sidebar-item-badge { margin-left:auto; }
         .member-count { display:flex; align-items:center; gap:5px; font-size:0.8rem; color:var(--color-text-muted); }
         .member-count-dot { width:7px; height:7px; background:#22C55E; border-radius:50%; }
+        @media(max-width:768px) {
+          .member-count { display:none!important; }
+          .channel-desc { display:none; }
+          .topbar-title { font-size:0.9rem; }
+        }
         @media(max-width:480px) { .channel-desc{display:none} }
       `}</style>
 
@@ -162,16 +167,18 @@ export default function AppPage() {
 
         <div className="main-panel">
           <header className="topbar" id="topbar">
+            {/* Left: hamburger (mobile) */}
             <button className="mobile-menu-btn" onClick={() => setDrawerOpen(true)} aria-label="Open navigation">
               <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"/>
               </svg>
             </button>
 
-            <div style={{ display:'flex', flexDirection:'column', marginRight:'auto', minWidth:0, flex:1 }}>
-              <div className="topbar-title">
+            {/* Center: channel title + description */}
+            <div style={{ flex:1, minWidth:0, overflow:'hidden' }}>
+              <div className="topbar-title" style={{ whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>
                 {activeDM ? (
-                  <span style={{ display:'flex', alignItems:'center', gap:8 }}>
+                  <span style={{ display:'inline-flex', alignItems:'center', gap:8 }}>
                     <img src={PEOPLE[activeDM]?.avatar} alt="" className="avatar avatar-xs" style={{ width:20, height:20 }} />
                     {PEOPLE[activeDM]?.name}
                   </span>
@@ -180,10 +187,11 @@ export default function AppPage() {
                 )}
               </div>
               {!activeDM && channelInfo && (
-                <div className="channel-desc">{channelInfo.desc}</div>
+                <div className="channel-desc" style={{ whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{channelInfo.desc}</div>
               )}
             </div>
 
+            {/* Right: member count (desktop only), bell, avatar */}
             {!activeDM && (
               <div className="member-count">
                 <span className="member-count-dot"></span>
@@ -197,7 +205,7 @@ export default function AppPage() {
             </button>
 
             <Link to="/profile">
-              <img src="https://i.pravatar.cc/36?img=47" alt="Profile" className="avatar avatar-sm" style={{ cursor:'pointer' }} />
+              <img src="https://i.pravatar.cc/36?img=47" alt="Profile" className="avatar avatar-sm" style={{ cursor:'pointer', flexShrink:0 }} />
             </Link>
           </header>
 

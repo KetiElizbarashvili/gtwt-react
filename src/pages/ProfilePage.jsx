@@ -35,7 +35,14 @@ export default function ProfilePage() {
         .pf-sidebar-nav a,.pf-sidebar-nav button { display:flex; align-items:center; gap:var(--space-3); padding:10px 12px; border-radius:var(--radius-md); color:var(--color-text-muted); font-size:0.875rem; text-decoration:none; cursor:pointer; background:none; border:none; width:100%; transition:background var(--transition),color var(--transition); }
         .pf-sidebar-nav a:hover,.pf-sidebar-nav button:hover { background:rgba(255,255,255,0.04); color:var(--color-text-primary); }
         .pf-sidebar-nav a.active { background:rgba(0,253,255,0.08); color:var(--color-cyan); }
-        @media(max-width:640px) { .profile-sidebar{display:none} .profile-main{padding:var(--space-4)} .profile-hero{flex-direction:column;align-items:center;text-align:center} }
+        .profile-mobile-topbar { display:none; align-items:center; justify-content:space-between; padding:0 var(--space-4); height:56px; background:var(--color-surface); border-bottom:1px solid var(--color-border); flex-shrink:0; position:sticky; top:0; z-index:20; }
+        .profile-mobile-topbar-title { font-family:var(--font-display); font-size:0.95rem; font-weight:700; }
+        @media(max-width:640px) {
+          .profile-sidebar { display:none; }
+          .profile-mobile-topbar { display:flex; }
+          .profile-main { padding:var(--space-4); padding-bottom:calc(var(--space-4) + 60px + env(safe-area-inset-bottom)); }
+          .profile-hero { flex-direction:column; align-items:center; text-align:center; }
+        }
       `}</style>
 
       <div className="profile-shell">
@@ -70,8 +77,17 @@ export default function ProfilePage() {
           </div>
         </aside>
 
-        {/* Main */}
-        <div className="profile-main">
+        {/* Main — flex column wraps sticky topbar + scrollable content */}
+        <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden' }}>
+        <div className="profile-mobile-topbar">
+          <GtwLogo size="sidebar" />
+          <span className="profile-mobile-topbar-title">My Profile</span>
+          <button
+            onClick={() => { sessionStorage.clear(); window.location.href='/login' }}
+            style={{ background:'none', border:'none', cursor:'pointer', color:'var(--color-text-muted)', fontSize:'0.75rem', fontFamily:'var(--font-label)', letterSpacing:'0.06em', textTransform:'uppercase' }}
+          >Sign Out</button>
+        </div>
+        <div className="profile-main" style={{ flex:1, overflowY:'auto' }}>
 
           {/* Hero card */}
           <div className="profile-card" style={{ background: `linear-gradient(135deg, rgba(0,253,255,0.04) 0%, transparent 60%), var(--color-surface)` }}>
@@ -162,8 +178,9 @@ export default function ProfilePage() {
             </div>
           </div>
 
-        </div>
-      </div>
+        </div>{/* end profile-main */}
+        </div>{/* end flex column wrapper */}
+      </div>{/* end profile-shell */}
 
       {/* Mobile bottom nav */}
       <nav className="mobile-nav">
