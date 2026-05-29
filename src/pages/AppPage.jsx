@@ -100,7 +100,6 @@ export default function AppPage() {
   return (
     <>
       <style>{`
-        body { overflow: hidden; }
         @keyframes msgIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
         .message-group { animation: msgIn 0.2s ease; }
         .typing-indicator { padding:0 var(--space-5) var(--space-2); font-size:0.78rem; color:var(--color-text-muted); min-height:24px; display:flex; align-items:center; gap:var(--space-2); transition:opacity 0.2s; }

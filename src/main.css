@@ -1036,6 +1036,11 @@ h4 { font-size: 1.125rem; }
    22. Responsive Breakpoints
    --------------------------------------------------------- */
 @media (max-width: 768px) {
+  /* Prevent iOS auto-zoom on input focus (requires font-size >= 16px) */
+  input, textarea, select, .composer-input, .form-input, .dir-search input {
+    font-size: 16px !important;
+  }
+
   /* Show mobile chrome, hide desktop chrome */
   .sidebar { display: none; }
   .mobile-nav { display: block; }
