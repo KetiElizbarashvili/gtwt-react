@@ -44,7 +44,7 @@ export default function DirectoryPage() {
   return (
     <>
       <style>{`
-        .dir-shell { display:flex; height:100dvh; overflow:hidden; background:var(--color-bg); }
+        .dir-shell { display:flex; height:100vh; height:100dvh; overflow:hidden; background:var(--color-bg); }
         .dir-sidebar { width:220px; flex-shrink:0; background:var(--color-surface); border-right:1px solid var(--color-border); display:flex; flex-direction:column; padding:var(--space-5); gap:var(--space-4); overflow-y:auto; }
         .dir-sidebar-logo { padding-bottom:var(--space-4); border-bottom:1px solid var(--color-border); }
         .dir-main { flex:1; overflow-y:auto; display:flex; flex-direction:column; }

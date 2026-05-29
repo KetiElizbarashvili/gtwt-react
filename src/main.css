@@ -360,6 +360,7 @@ h4 { font-size: 1.125rem; }
    --------------------------------------------------------- */
 .app-shell {
   display: flex;
+  height: 100vh;
   height: 100dvh;
   overflow: hidden;
 }
@@ -737,6 +738,7 @@ h4 { font-size: 1.125rem; }
    --------------------------------------------------------- */
 .admin-layout {
   display: flex;
+  height: 100vh;
   height: 100dvh;
   overflow: hidden;
 }

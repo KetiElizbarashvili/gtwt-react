@@ -12,7 +12,7 @@ export default function ProfilePage() {
   return (
     <>
       <style>{`
-        .profile-shell { display:flex; height:100dvh; overflow:hidden; background:var(--color-bg); }
+        .profile-shell { display:flex; height:100vh; height:100dvh; overflow:hidden; background:var(--color-bg); }
         .profile-sidebar { width:220px; flex-shrink:0; background:var(--color-surface); border-right:1px solid var(--color-border); display:flex; flex-direction:column; padding:var(--space-5); gap:var(--space-4); overflow-y:auto; }
         .profile-main { flex:1; overflow-y:auto; padding:var(--space-6); display:flex; flex-direction:column; gap:var(--space-5); }
         .profile-card { background:var(--color-surface); border:1px solid var(--color-border); border-radius:var(--radius-xl); padding:var(--space-6); }
