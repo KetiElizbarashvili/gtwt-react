@@ -8,7 +8,7 @@
 **GTW Tbilisi** is a mobile-first web app for conference attendees.
 It gives everyone at the event — speakers, founders, investors, volunteers — a single place to communicate, connect, and navigate the conference in real time.
 
-Think of it as a **lightweight event community platform**: part Slack, part speaker directory, part networking tool.
+Think of it as a **lightweight event community platform**: part Slack, part Speakers, part networking tool.
 
 ---
 
@@ -69,7 +69,7 @@ The heart of the product. A real-time messaging interface.
 
 ---
 
-### 3. Speaker Directory (`/directory`)
+### 3. Speakers (`/directory`)
 Browse all conference speakers and attendees.
 
 **What it shows:**
@@ -82,7 +82,7 @@ Browse all conference speakers and attendees.
 - "LinkedIn" button → external profile link
 
 **Current speakers in data:**
-- Ana Beridze (AI · DeepMind) — logged-in user persona
+- Keto Elizbarashvili (AI · DeepMind) — logged-in user persona
 - Giorgi Kvaratskhelia (CEO · PayGe · Fintech)
 - Nino Tabatadze (Founder · Chainhaus · Web3)
 - David Lomidze (Managing Partner · Galt & Taggart · Venture)
@@ -163,7 +163,7 @@ Or tap "Message" to DM them directly
 | Typing indicator simulation | ✅ Done |
 | Unread badge counters | ✅ Done |
 | Read-only #announcements | ✅ Done |
-| Speaker directory with filters + search | ✅ Done |
+| Speakers with filters + search | ✅ Done |
 | DM from directory ("Message" button) | ✅ Done |
 | Profile page | ✅ Done |
 | Mobile bottom nav | ✅ Done |

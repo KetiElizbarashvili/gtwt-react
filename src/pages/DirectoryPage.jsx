@@ -1,16 +1,24 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { GtwLogo } from '../components/GtwLogo'
+import { TopBarUser } from '../components/TopBarUser'
+import { TopBarActions } from '../components/TopBarActions'
+import { MobileNav } from '../components/MobileNav'
 
 const SPEAKERS = [
-  { key: 'self',   name: 'Ana Beridze',         occ: 'AI Researcher · DeepMind',         stage: 'ai',             tag: 'AI',             avatar: 'https://i.pravatar.cc/64?img=47', online: true,  country: 'Georgia · UK',       bio: 'Researching multimodal AI systems. Previously at Google Brain. Passionate about responsible AI deployment in emerging markets.' },
-  { key: 'giorgi', name: 'Giorgi Kvaratskhelia', occ: 'CEO · PayGe',                      stage: 'fintech',        tag: 'Fintech',        avatar: 'https://i.pravatar.cc/64?img=12', online: true,  country: 'Georgia',            bio: 'Serial founder, exits in fintech. Obsessed with removing friction from payments across emerging markets.' },
-  { key: 'nino',   name: 'Nino Tabatadze',       occ: 'Founder · Chainhaus',              stage: 'web3',           tag: 'Web3',           avatar: 'https://i.pravatar.cc/64?img=32', online: true,  country: 'Georgia · Remote',   bio: 'Building DeFi infrastructure for the Black Sea region. EF fellow. Speaker at ETHGlobal 2024.' },
-  { key: 'david',  name: 'David Lomidze',         occ: 'Managing Partner · Galt & Taggart',stage: 'venture',       tag: 'Venture',        avatar: 'https://i.pravatar.cc/64?img=55', online: false, country: 'Georgia',            bio: '25+ years in Georgian capital markets. Active angel in 14 startups across the Caucasus.' },
-  { key: 'luka',   name: 'Luka Chikovaní',        occ: 'Creative Director · Studio Pixel', stage: 'creative-tech', tag: 'Creative Tech',  avatar: 'https://i.pravatar.cc/64?img=22', online: true,  country: 'Georgia · Armenia',  bio: 'Blending generative AI with traditional Georgian visual motifs to create a new design language.' },
-  { key: 'sophie', name: 'Sophie Merabishvili',   occ: 'Head of Product · Tbilisi City Hall',stage:'urban-innovation',tag:'Urban Innovation',avatar:'https://i.pravatar.cc/64?img=61',online:true,  country: 'Georgia',            bio: 'Leading digital transformation of city services. Smart city. Open data. Civic tech advocate.' },
-  { key: 'mari',   name: 'Mari Jikia',             occ: 'Operations Lead · GTW',            stage: '',               tag: null,             avatar: 'https://i.pravatar.cc/64?img=68', online: true,  country: 'GTW Team',           bio: 'GTW operations team. Your go-to person for logistics, speaker support, and event questions.', volunteer: true },
-  { key: 'tato',   name: 'Tato Sulakvelidze',      occ: 'Founder · Gamify.ge',              stage: 'gaming',         tag: 'Gaming',         avatar: 'https://i.pravatar.cc/64?img=71', online: false, country: 'Georgia · Poland',   bio: 'Building the first Georgian indie game studio. Shipped 3 titles in 2 years. Community > marketing.' },
+  { key: 'self',     name: 'Keto Elizbarashvili',                 occ: 'AI Researcher · DeepMind',     stage: 'ai',            tag: 'AI',            avatar: '/speakers/keto.png', online: true,  country: 'Georgia · UK', bio: 'Researching multimodal AI systems. Previously at Google Brain. Passionate about responsible AI deployment in emerging markets.' },
+  { key: 'nino',     name: 'Nino Eliava',                 occ: 'Speaker',                       stage: '',              tag: null,            avatar: '/speakers/nino-eliava.jpg',          online: true,  country: '',             bio: 'GTW Tbilisi 2026 speaker.' },
+  { key: 'tarik',    name: 'Tarik Sultan',                occ: 'Builders VC',                   stage: 'venture',       tag: 'Venture',       avatar: '/speakers/tarik-sultan.png',         online: true,  country: '',             bio: 'Investor at Builders VC.' },
+  { key: 'sven',     name: 'Sven Gerst',                  occ: 'Speaker',                       stage: '',              tag: null,            avatar: '/speakers/Sven-Gerst.jpg',           online: false, country: '',             bio: 'GTW Tbilisi 2026 speaker.' },
+  { key: 'tsitsi',   name: 'Tsitsi Iashvili',             occ: 'Starring Georgia',              stage: 'creative-tech', tag: 'Creative Tech', avatar: '/speakers/Tsitsi-Iashvili.jpg',      online: true,  country: 'Georgia',      bio: 'Founder, Starring Georgia.' },
+  { key: 'saba',     name: 'Saba Bakhia',                 occ: 'Speaker',                       stage: '',              tag: null,            avatar: '/speakers/Saba-Bakhia.png',          online: true,  country: '',             bio: 'GTW Tbilisi 2026 speaker.' },
+  { key: 'abhishek', name: 'Abhishek Das, PhD',           occ: 'Concentric AI',                 stage: 'ai',            tag: 'AI',            avatar: '/speakers/Abhishek-Das-PhD.jpg',     online: true,  country: '',             bio: 'AI researcher and practitioner at Concentric AI.' },
+  { key: 'arman',    name: 'Arman Mamyan',                occ: 'Coverant.xyz · Moca Network',   stage: 'web3',          tag: 'Web3',          avatar: '/speakers/Arman-Mamyan.jpg',         online: true,  country: '',             bio: 'Builder at Coverant.xyz and Moca Network.' },
+  { key: 'nana',     name: 'Nana Berdzenishvili',         occ: 'CCEH',                          stage: 'venture',       tag: 'Venture',       avatar: '/speakers/Nana-Berdzenishvili.jpg',  online: false, country: '',             bio: 'CCEH.' },
+  { key: 'jeremy',   name: 'Jeremy Allan Bauman',         occ: 'New Dominion Angels',           stage: 'venture',       tag: 'Venture',       avatar: '/speakers/Jeremy-Allan-Bauman.jpg',  online: true,  country: '',             bio: 'New Dominion Angels.' },
+  { key: 'samson',   name: 'Dr. Samson (Soso) Pkhakadze', occ: 'Wissol Group · BAG',            stage: 'fintech',       tag: 'Fintech',       avatar: '/speakers/Dr-Samson-Pkhakadze.jpeg', online: true,  country: 'Georgia',      bio: 'Wissol Group, BAG.' },
+  { key: 'iiro',     name: 'Iiro Jussila',                occ: 'Capital Six Ltd',               stage: 'venture',       tag: 'Venture',       avatar: '/speakers/Iiro-Jussila.jpg',         online: true,  country: 'Finland',      bio: 'Capital Six Ltd.' },
+  { key: 'fran',     name: 'Fran Mikuličić',              occ: 'FM Advisory & Solutions',       stage: 'venture',       tag: 'Venture',       avatar: '/speakers/Fran-Mikuličić.png',       online: false, country: 'Croatia',      bio: 'FM Advisory & Solutions.' },
 ]
 
 const STAGES = ['all', 'ai', 'fintech', 'web3', 'venture', 'creative-tech', 'urban-innovation', 'gaming']
@@ -45,7 +53,8 @@ export default function DirectoryPage() {
     <>
       <style>{`
         .dir-shell { display:flex; height:100vh; height:100dvh; overflow:hidden; background:var(--color-bg); }
-        .dir-sidebar { width:220px; flex-shrink:0; background:var(--color-surface); border-right:1px solid var(--color-border); display:flex; flex-direction:column; padding:var(--space-5); gap:var(--space-4); overflow-y:auto; }
+        .dir-sidebar { width:var(--sidebar-w); flex-shrink:0; background:var(--color-surface); border-right:1px solid var(--color-border); display:flex; flex-direction:column; padding:var(--space-5); gap:var(--space-4); overflow-y:auto; }
+        .dir-topbar { display:flex; }
         .dir-sidebar-logo { padding-bottom:var(--space-4); border-bottom:1px solid var(--color-border); }
         .dir-main { flex:1; overflow-y:auto; display:flex; flex-direction:column; }
         .dir-header { padding:var(--space-6) var(--space-6) 0; border-bottom:1px solid var(--color-border); }
@@ -87,10 +96,10 @@ export default function DirectoryPage() {
         .dir-sidebar-nav a,.dir-sidebar-nav button { display:flex; align-items:center; gap:var(--space-3); padding:10px 12px; border-radius:var(--radius-md); color:var(--color-text-muted); font-size:0.875rem; text-decoration:none; cursor:pointer; background:none; border:none; width:100%; transition:background var(--transition),color var(--transition); }
         .dir-sidebar-nav a:hover,.dir-sidebar-nav button:hover { background:rgba(255,255,255,0.04); color:var(--color-text-primary); }
         .dir-sidebar-nav a.active { background:rgba(0,253,255,0.08); color:var(--color-cyan); }
-        .dir-mobile-topbar { display:none; align-items:center; justify-content:space-between; padding:0 var(--space-4); height:56px; background:var(--color-surface); border-bottom:1px solid var(--color-border); flex-shrink:0; position:sticky; top:0; z-index:20; }
-        .dir-mobile-topbar-title { font-family:var(--font-display); font-size:0.95rem; font-weight:700; color:var(--color-text-primary); }
+        .dir-mobile-topbar { display:none; align-items:center; justify-content:center; padding:0 var(--space-4); height:56px; background:var(--color-surface); border-bottom:1px solid var(--color-border); flex-shrink:0; position:sticky; top:0; z-index:20; }
         @media(max-width:640px) {
           .dir-sidebar { display:none; }
+          .dir-topbar { display:none; }
           .dir-mobile-topbar { display:flex; }
           .dir-grid { grid-template-columns:1fr; padding:var(--space-4); padding-bottom:calc(var(--space-4) + 60px + env(safe-area-inset-bottom)); }
           .dir-header { padding:var(--space-4) var(--space-4) 0; }
@@ -105,17 +114,13 @@ export default function DirectoryPage() {
         <aside className="dir-sidebar">
           <div className="dir-sidebar-logo"><GtwLogo size="sidebar" /></div>
           <nav className="dir-sidebar-nav" style={{ display:'flex', flexDirection:'column', gap:4 }}>
-            <Link to="/app">
-              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
-              Chat Hub
-            </Link>
             <Link to="/directory" className="active">
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-              Directory
+              Speakers
             </Link>
-            <Link to="/profile">
-              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-              My Profile
+            <Link to="/app">
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+              Channels &amp; DMs
             </Link>
           </nav>
           <div style={{ marginTop:'auto', paddingTop:'var(--space-4)', borderTop:'1px solid var(--color-border)', fontSize:'0.75rem', color:'var(--color-text-muted)' }}>
@@ -130,14 +135,18 @@ export default function DirectoryPage() {
           {/* Mobile topbar — visible only on small screens */}
           <div className="dir-mobile-topbar">
             <GtwLogo size="sidebar" />
-            <span className="dir-mobile-topbar-title">Speakers</span>
-            <Link to="/profile">
-              <img src="https://i.pravatar.cc/36?img=47" alt="Profile" className="avatar avatar-sm" style={{ cursor:'pointer' }} />
-            </Link>
           </div>
 
+          {/* Desktop topbar */}
+          <header className="topbar dir-topbar">
+            <div style={{ marginLeft:'auto', display:'flex', alignItems:'center', gap:'var(--space-3)' }}>
+              <TopBarActions />
+              <TopBarUser />
+            </div>
+          </header>
+
           <div className="dir-header">
-            <div className="dir-title">Speaker Directory</div>
+            <div className="dir-title">Speakers</div>
             <div className="dir-controls">
               <div className="dir-search">
                 <svg className="dir-search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
@@ -199,23 +208,7 @@ export default function DirectoryPage() {
         </div>
       </div>
 
-      {/* Mobile bottom nav */}
-      <nav className="mobile-nav">
-        <div className="mobile-nav-inner">
-          <Link to="/app" className="mobile-nav-item">
-            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
-            <span>Channels</span>
-          </Link>
-          <Link to="/directory" className="mobile-nav-item active">
-            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-            <span>Speakers</span>
-          </Link>
-          <Link to="/profile" className="mobile-nav-item">
-            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-            <span>Profile</span>
-          </Link>
-        </div>
-      </nav>
+      <MobileNav />
     </>
   )
 }

@@ -1,0 +1,25 @@
+{
+  "name": "GTW Speaker Hub",
+  "short_name": "GTW Hub",
+  "description": "Global Tech Weekend Tbilisi 2026 — Speaker Hub",
+  "start_url": "/login",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#000016",
+  "theme_color": "#000016",
+  "icons": [
+    {
+      "src": "/pwa-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Sidebar } from '../components/Sidebar'
+import { TopBarUser } from '../components/TopBarUser'
+import { TopBarActions } from '../components/TopBarActions'
+import { MobileNav } from '../components/MobileNav'
+import { PWAInstallModal } from '../components/PWAInstallModal'
 import { PEOPLE, CHANNELS, MESSAGES } from '../data'
 
-const EMOJIS = ['😊','🙌','👍','🎉','🔥','💡','🚀','❓']
-const REACTION_EMOJIS = ['👍','🔥','😂','🙌','❤️','🎉']
 const EASTER_EGG_CLICKS = 7
 
 // #13: Confetti particle for easter egg
@@ -120,22 +122,14 @@ export default function AppPage() {
   const navigate  = useNavigate()
   const feedRef   = useRef(null)
   const inputRef  = useRef(null)
-  const touchStartY = useRef(null)
   const eggTimer  = useRef(null)
 
   const [messages, setMessages]         = useState(() => structuredClone(MESSAGES))
   const [activeChannel, setActiveChannel] = useState('general')
   const [activeDM, setActiveDM]         = useState(null)
-  const [drawerOpen, setDrawerOpen]     = useState(false)
   const [inputVal, setInputVal]         = useState('')
   const [typing, setTyping]             = useState(null)
-  const [notifOpen, setNotifOpen]       = useState(false)
-  const [dmBadges, setDmBadges]         = useState({ giorgi: 2 })
-  // #14: Emoji reactions { [`${currentKey}-${msgId}`]: { emoji: count } }
-  const [reactions, setReactions]       = useState({})
-  const [activeReactionMsg, setActiveReactionMsg] = useState(null)
-  // #15: Per-message actions
-  const [hoveredMsg, setHoveredMsg]     = useState(null)
+  const [dmBadges, setDmBadges]         = useState({ tarik: 2 })
   const [pinnedMsgs, setPinnedMsgs]     = useState(new Set())
   // #10: Profile sheet
   const [profileSheet, setProfileSheet] = useState(null)
@@ -149,24 +143,21 @@ export default function AppPage() {
 
   useEffect(() => {
     const dmKey = sessionStorage.getItem('gtw_open_dm')
+    const chKey = sessionStorage.getItem('gtw_open_channel')
     sessionStorage.removeItem('gtw_open_dm')
+    sessionStorage.removeItem('gtw_open_channel')
     if (dmKey && PEOPLE[dmKey]) {
       setActiveDM(dmKey)
       setActiveChannel(null)
+    } else if (chKey && CHANNELS[chKey]) {
+      setActiveChannel(chKey)
+      setActiveDM(null)
     }
   }, [])
 
   useEffect(() => {
     if (feedRef.current) feedRef.current.scrollTop = feedRef.current.scrollHeight
   }, [messages, activeChannel, activeDM])
-
-  // Close reaction picker on outside click
-  useEffect(() => {
-    if (!activeReactionMsg) return
-    const close = () => setActiveReactionMsg(null)
-    document.addEventListener('click', close)
-    return () => document.removeEventListener('click', close)
-  }, [activeReactionMsg])
 
   const currentKey      = activeDM ? `dm-${activeDM}` : activeChannel
   const currentMessages = messages[currentKey] || []
@@ -175,13 +166,12 @@ export default function AppPage() {
 
   function switchChannel(key) {
     setActiveChannel(key); setActiveDM(null)
-    setDrawerOpen(false); setInputVal('')
+    setInputVal('')
     inputRef.current?.focus()
   }
 
   function switchDM(key) {
     setActiveDM(key); setActiveChannel(null)
-    setDrawerOpen(false)
     setDmBadges(b => ({ ...b, [key]: 0 }))
     setInputVal('')
     inputRef.current?.focus()
@@ -209,21 +199,6 @@ export default function AppPage() {
         setTyping(null)
       }, 1500)
     }
-  }
-
-  function insertEmoji() {
-    setInputVal(v => v + EMOJIS[Math.floor(Math.random() * EMOJIS.length)])
-    inputRef.current?.focus()
-  }
-
-  // #14
-  function addReaction(msgId, emoji) {
-    const key = `${currentKey}-${msgId}`
-    setReactions(prev => {
-      const cur = prev[key] || {}
-      return { ...prev, [key]: { ...cur, [emoji]: (cur[emoji] || 0) + 1 } }
-    })
-    setActiveReactionMsg(null)
   }
 
   // #15: Delete own message
@@ -254,15 +229,6 @@ export default function AppPage() {
       setTimeout(() => setEggActive(false), 3000)
     } else {
       eggTimer.current = setTimeout(() => setEggCount(0), 2000)
-    }
-  }
-
-  // #2: Swipe down to close drawer
-  function onDrawerTouchStart(e) { touchStartY.current = e.touches[0].clientY }
-  function onDrawerTouchMove(e) {
-    if (touchStartY.current === null) return
-    if (e.touches[0].clientY - touchStartY.current > 64) {
-      setDrawerOpen(false); touchStartY.current = null
     }
   }
 
@@ -370,7 +336,11 @@ export default function AppPage() {
 
         /* #3: hide topbar hamburger on mobile (bottom nav handles it) */
         .topbar-avatar-link { display:flex; }
+        /* Back-to-channels button: mobile only */
+        .topbar-back { display:none; background:none; border:none; cursor:pointer; color:var(--color-text-muted); align-items:center; justify-content:center; width:var(--touch-min); height:var(--touch-min); margin-left:calc(var(--space-3) * -1); border-radius:var(--radius-md); transition:background var(--transition),color var(--transition); }
+        .topbar-back:hover { background:rgba(255,255,255,0.06); color:var(--color-text-primary); }
         @media(max-width:768px) {
+          .topbar-back { display:flex; }
           .member-count { display:none!important; }
           .channel-desc { display:none; }
           .topbar-title { font-size:0.9rem; }
@@ -408,6 +378,9 @@ export default function AppPage() {
         <div className="main-panel">
           {/* Topbar — #3: NO hamburger, #4: avatar hidden on mobile */}
           <header className="topbar" id="topbar">
+            <button className="topbar-back" onClick={() => navigate('/channels')} aria-label="Back to channels">
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/></svg>
+            </button>
             <div style={{ flex:1, minWidth:0, overflow:'hidden' }}>
               <div className="topbar-title" style={{ whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>
                 {activeDM ? (
@@ -432,23 +405,13 @@ export default function AppPage() {
               )}
             </div>
 
-            {!activeDM && (
-              <div className="member-count">
-                <span className="member-count-dot" />
-                <span>91 online</span>
-              </div>
-            )}
-
-            {/* #13 Easter egg: tap bell 7× */}
-            <button className="notif-btn" onClick={() => { setNotifOpen(o => !o); handleEasterEgg() }} aria-label="Notifications">
-              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-              <span className="notif-dot" />
-            </button>
+            {/* #13 Easter egg: tap bell 7× (handled inside TopBarActions) */}
+            <TopBarActions onBellClick={handleEasterEgg} />
 
             {/* #4: Hidden on mobile */}
-            <Link to="/profile" className="topbar-avatar-link">
-              <img src="https://i.pravatar.cc/36?img=47" alt="Profile" className="avatar avatar-sm" style={{ cursor:'pointer', flexShrink:0 }} />
-            </Link>
+            <div className="topbar-avatar-link">
+              <TopBarUser />
+            </div>
           </header>
 
           {/* Messages feed */}
@@ -456,18 +419,13 @@ export default function AppPage() {
             <div className="date-separator">Today, June 19</div>
             {currentMessages.map(msg => {
               const isSelf  = msg.author === 'self'
-              const person  = isSelf ? { name:'Ana Beridze', avatar:'https://i.pravatar.cc/36?img=47' } : PEOPLE[msg.author]
-              const reactionKey  = `${currentKey}-${msg.id}`
-              const msgReactions = reactions[reactionKey] || {}
-              const hasReactions = Object.keys(msgReactions).some(k => msgReactions[k] > 0)
-              const isPinned     = pinnedMsgs.has(msg.id)
+              const person  = isSelf ? { name:'Keto Elizbarashvili', avatar:'/speakers/keto.png' } : PEOPLE[msg.author]
+              const isPinned = pinnedMsgs.has(msg.id)
 
               return (
                 <div
                   key={msg.id}
                   className={`message-group${isPinned ? ' pinned' : ''}`}
-                  onMouseLeave={() => { setHoveredMsg(null); setActiveReactionMsg(null) }}
-                  onMouseEnter={() => setHoveredMsg(msg.id)}
                 >
                   {/* #10: click avatar to open profile sheet */}
                   <img
@@ -492,44 +450,21 @@ export default function AppPage() {
                         <span className="volunteer-badge">⚡ Volunteer</span>
                       )}
                       <span className="message-time">{msg.time}</span>
-                      {isPinned && <span style={{ fontSize:'0.65rem', color:'var(--color-lime)', display:'flex', alignItems:'center', gap:2 }}>📌 Pinned</span>}
+                      {isPinned && (
+                        <span style={{ fontSize:'0.65rem', color:'var(--color-lime)', display:'flex', alignItems:'center', gap:3 }}>
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M16 9V4l1-1V1H7v2l1 1v5l-3 5h6v7l1 1 1-1v-7h6z"/></svg>
+                          Pinned
+                        </span>
+                      )}
                     </div>
                     {/* #12: @mention highlighting */}
                     <div className="message-text">{renderText(msg.text)}</div>
-
-                    {/* #14: Reactions */}
-                    {(hasReactions || hoveredMsg === msg.id) && (
-                      <div className="reactions-row" onClick={e => e.stopPropagation()}>
-                        {Object.entries(msgReactions).filter(([,c]) => c > 0).map(([emoji, count]) => (
-                          <button key={emoji} className="reaction-chip" onClick={() => addReaction(msg.id, emoji)}>
-                            {emoji} <span style={{ fontSize:'0.72rem' }}>{count}</span>
-                          </button>
-                        ))}
-                        {hoveredMsg === msg.id && (
-                          <button className="reaction-add" onClick={e => { e.stopPropagation(); setActiveReactionMsg(activeReactionMsg === msg.id ? null : msg.id) }}>
-                            + 😊
-                          </button>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Reaction picker popover */}
-                    {activeReactionMsg === msg.id && (
-                      <div className="reaction-picker" onClick={e => e.stopPropagation()}>
-                        {REACTION_EMOJIS.map(emoji => (
-                          <button key={emoji} className="reaction-picker-emoji" onClick={() => addReaction(msg.id, emoji)}>
-                            {emoji}
-                          </button>
-                        ))}
-                      </div>
-                    )}
                   </div>
 
-                  {/* #15: Message action bar (hover) */}
+                  {/* Message action bar (hover) — pin/delete only */}
                   <div className="msg-actions">
-                    <button className="msg-action-btn" title="React" onClick={e => { e.stopPropagation(); setActiveReactionMsg(activeReactionMsg === msg.id ? null : msg.id) }}>😊</button>
                     <button className="msg-action-btn" title={isPinned ? 'Unpin' : 'Pin'} onClick={() => togglePin(msg.id)}>
-                      📌
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M16 9V4l1-1V1H7v2l1 1v5l-3 5h6v7l1 1 1-1v-7h6z"/></svg>
                     </button>
                     {isSelf && (
                       <button className="msg-action-btn danger" title="Delete" onClick={() => deleteMessage(msg.id)}>
@@ -561,7 +496,6 @@ export default function AppPage() {
           ) : (
             <div className="composer">
               <div className="composer-inner">
-                <button className="composer-emoji" onClick={insertEmoji} aria-label="Emoji">😊</button>
                 <input
                   ref={inputRef}
                   className="composer-input"
@@ -580,92 +514,9 @@ export default function AppPage() {
         </div>
       </div>
 
-      {/* #2: Overlay — always rendered, toggled by class (was the bug: never had .open class) */}
-      <div
-        className={`drawer-overlay${drawerOpen ? ' open' : ''}`}
-        onClick={() => setDrawerOpen(false)}
-      />
+      <MobileNav />
 
-      {/* Mobile drawer — #2: swipe down to close */}
-      <div
-        className={`mobile-drawer${drawerOpen ? ' open' : ''}`}
-        role="dialog"
-        aria-modal="true"
-        onTouchStart={onDrawerTouchStart}
-        onTouchMove={onDrawerTouchMove}
-      >
-        <div className="drawer-handle" />
-        <div className="drawer-heading">
-          {/* #13: tap heading 7× for easter egg */}
-          <span onClick={handleEasterEgg} style={{ cursor:'default' }}>Channels &amp; Messages</span>
-        </div>
-
-        <div className="drawer-section-label">Channels</div>
-        {Object.entries(CHANNELS).map(([key, ch]) => (
-          <button key={key} className={`drawer-item${activeChannel === key && !activeDM ? ' active' : ''}`} onClick={() => switchChannel(key)}>
-            <span className="ch-hash" style={ch.color ? { color: ch.color } : {}}>#</span>
-            <span style={{ flex:1 }}>{ch.label}</span>
-            {ch.badge > 0 && <span className="badge">{ch.badge}</span>}
-          </button>
-        ))}
-
-        <div className="drawer-section-label" style={{ marginTop:'var(--space-2)' }}>Direct Messages</div>
-        {Object.entries(PEOPLE).map(([key, person]) => (
-          <button key={key} className={`drawer-item${activeDM === key ? ' active' : ''}`} onClick={() => switchDM(key)}>
-            <div className="avatar-wrap" style={{ flexShrink:0 }}>
-              <img src={person.avatar} alt="" className="avatar avatar-xs" />
-              {/* #9: online dot */}
-              {person.online && <span className="presence-dot" style={{ width:8, height:8 }} />}
-            </div>
-            <div style={{ flex:1, minWidth:0 }}>
-              <div style={{ fontSize:'0.875rem', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis', display:'flex', alignItems:'center', gap:4 }}>
-                {person.name}
-                {/* #11: volunteer tag in DM list */}
-                {person.volunteer && <span style={{ fontSize:'0.6rem', color:'var(--color-lime)', background:'rgba(195,251,26,0.1)', border:'1px solid rgba(195,251,26,0.2)', borderRadius:'var(--radius-full)', padding:'1px 5px', fontWeight:700, letterSpacing:'0.04em', textTransform:'uppercase' }}>Vol</span>}
-              </div>
-              <div style={{ fontSize:'0.72rem', color:'var(--color-text-muted)' }}>{dmPreviews[key] || 'Start a conversation…'}</div>
-            </div>
-            {dmBadges[key] > 0 && <span className="badge">{dmBadges[key]}</span>}
-          </button>
-        ))}
-
-        <div className="drawer-footer">
-          <Link to="/directory" className="btn btn-ghost btn-block btn-sm" onClick={() => setDrawerOpen(false)}>
-            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-            Speaker Directory
-          </Link>
-        </div>
-      </div>
-
-      {/* Mobile bottom nav — #3: Channels/DMs open drawer (burger removed from topbar) */}
-      <nav className="mobile-nav">
-        <div className="mobile-nav-inner">
-          <button
-            className={`mobile-nav-item${!activeDM && !drawerOpen ? ' active' : ''}`}
-            onClick={() => setDrawerOpen(true)}
-            style={{ background:'none', border:'none', cursor:'pointer' }}
-          >
-            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
-            <span>Channels</span>
-          </button>
-          <button
-            className={`mobile-nav-item${activeDM ? ' active' : ''}`}
-            onClick={() => setDrawerOpen(true)}
-            style={{ background:'none', border:'none', cursor:'pointer' }}
-          >
-            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-            <span>DMs</span>
-          </button>
-          <Link to="/directory" className="mobile-nav-item">
-            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-            <span>Speakers</span>
-          </Link>
-          <Link to="/profile" className="mobile-nav-item">
-            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-            <span>Profile</span>
-          </Link>
-        </div>
-      </nav>
+      <PWAInstallModal />
     </>
   )
 }
