@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>GTW Speaker Hub — Product Presentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+/* ── Brand tokens ── */
+:root {
+  --bg:       #000016;
+  --surface:  #080B20;
+  --border:   #141830;
+  --cyan:     #00FDFF;
+  --lime:     #C3FB1A;
+  --magenta:  #FF0040;
+  --violet:   #C13DFF;
+  --blue:     #1A3CFB;
+  --white:    #FFFFFF;
+  --muted:    #6B7280;
+  --mono:     'Space Mono', monospace;
+  --body:     'Inter Tight', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--white);
+  font-family: var(--body);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Slide engine ── */
+.deck { width: 100vw; height: 100vh; position: relative; }
+
+.slide {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  padding: 56px 72px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  transform: translateY(20px);
+  overflow: hidden;
+}
+.slide.active {
+  opacity: 1; pointer-events: all; transform: translateY(0);
+}
+
+/* ── Navigation ── */
+.nav {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 16px;
+  background: rgba(8,11,32,0.9);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 999px;
+  padding: 8px 20px;
+  z-index: 100;
+}
+.nav-btn {
+  background: none; border: none; cursor: pointer;
+  color: var(--muted); width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; transition: background 0.15s, color 0.15s;
+}
+.nav-btn:hover { background: rgba(255,255,255,0.06); color: var(--white); }
+.slide-count {
+  font-family: var(--mono); font-size: 0.7rem;
+  color: var(--muted); min-width: 52px; text-align: center;
+}
+.progress-dots { display: flex; gap: 6px; align-items: center; }
+.dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--border); cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+.dot.active { background: var(--cyan); transform: scale(1.4); }
+
+/* ── Background grid ── */
+.slide::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+}
+
+/* ── Typography helpers ── */
+.label {
+  font-family: var(--mono); font-size: 0.65rem;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--cyan); margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.label::before { content: ''; width: 24px; height: 1px; background: var(--cyan); }
+
+h1 { font-family: var(--mono); font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 700; line-height: 1.1; }
+h2 { font-family: var(--mono); font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 700; line-height: 1.2; }
+h3 { font-family: var(--mono); font-size: 1rem; font-weight: 700; }
+
+.accent-cyan    { color: var(--cyan); }
+.accent-lime    { color: var(--lime); }
+.accent-magenta { color: var(--magenta); }
+.accent-violet  { color: var(--violet); }
+.muted          { color: var(--muted); }
+
+/* ── Glow blobs ── */
+.blob {
+  position: absolute; border-radius: 50%;
+  filter: blur(80px); pointer-events: none; z-index: 0;
+}
+
+/* ── Cards ── */
+.card {
+  background: rgba(8,11,32,0.8);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px; padding: 24px;
+  position: relative; z-index: 1;
+  backdrop-filter: blur(8px);
+}
+.card-cyan  { border-color: rgba(0,253,255,0.2); }
+.card-lime  { border-color: rgba(195,251,26,0.2); }
+.card-magenta{ border-color: rgba(255,0,64,0.2); }
+.card-violet{ border-color: rgba(193,61,255,0.2); }
+
+/* ── Tag pills ── */
+.tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 999px;
+  font-size: 0.68rem; font-family: var(--mono);
+  letter-spacing: 0.06em; text-transform: uppercase; font-weight: 700;
+}
+.tag-cyan    { background: rgba(0,253,255,0.1);   color: var(--cyan);    border: 1px solid rgba(0,253,255,0.25); }
+.tag-lime    { background: rgba(195,251,26,0.1);  color: var(--lime);    border: 1px solid rgba(195,251,26,0.25); }
+.tag-magenta { background: rgba(255,0,64,0.1);    color: var(--magenta); border: 1px solid rgba(255,0,64,0.25); }
+.tag-violet  { background: rgba(193,61,255,0.1);  color: var(--violet);  border: 1px solid rgba(193,61,255,0.25); }
+.tag-blue    { background: rgba(26,60,251,0.15);  color: #7B9CFF;        border: 1px solid rgba(26,60,251,0.4); }
+.tag-muted   { background: rgba(107,114,128,0.1); color: var(--muted);   border: 1px solid rgba(107,114,128,0.2); }
+
+/* ── Divider ── */
+.divider {
+  width: 100%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin: 24px 0;
+}
+
+/* ── Check list ── */
+.checklist { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.checklist li {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 0.9rem; line-height: 1.5;
+}
+.check-icon { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; }
+
+/* ── Grid layouts ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
+
+/* ── Flow arrow ── */
+.flow { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.flow-step {
+  background: rgba(8,11,32,0.9);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px; padding: 8px 14px;
+  font-size: 0.8rem; line-height: 1.3;
+  position: relative; z-index: 1;
+}
+.flow-arrow { color: var(--muted); font-size: 1rem; }
+
+/* ── Status row ── */
+.status-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+}
+.status-row:last-child { border-bottom: none; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dot-green   { background: var(--lime); box-shadow: 0 0 8px var(--lime); }
+.dot-red     { background: var(--magenta); box-shadow: 0 0 8px var(--magenta); }
+.dot-yellow  { background: #F59E0B; box-shadow: 0 0 8px #F59E0B; }
+
+/* ── Screen mockup ── */
+.mockup {
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  overflow: hidden; position: relative;
+}
+.mockup-bar {
+  height: 32px; background: rgba(0,0,0,0.4);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 12px; gap: 6px;
+}
+.mockup-dot { width: 8px; height: 8px; border-radius: 50%; }
+.mockup-content { padding: 14px; font-size: 0.72rem; }
+
+/* ── Slide 1: Title ── */
+#s1 { justify-content: center; }
+#s1 .blob-1 { width: 600px; height: 600px; background: rgba(0,253,255,0.07); top:-100px; left:-150px; }
+#s1 .blob-2 { width: 500px; height: 500px; background: rgba(193,61,255,0.08); bottom:-50px; right:-100px; }
+#s1 .blob-3 { width: 300px; height: 300px; background: rgba(255,0,64,0.05); top:50%; left:60%; }
+
+.title-eyebrow {
+  font-family: var(--mono); font-size: 0.72rem;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--cyan);
+  margin-bottom: 24px; display: flex; align-items: center; gap: 12px; position: relative; z-index:1;
+}
+.title-eyebrow::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, rgba(0,253,255,0.4), transparent); }
+
+.title-main { position: relative; z-index:1; }
+.title-main h1 { font-size: clamp(3rem, 7vw, 5.5rem); margin-bottom: 12px; }
+.title-sub { font-size: 1.05rem; color: var(--muted); line-height: 1.6; position: relative; z-index:1; margin-top: 20px; max-width: 560px; }
+
+.title-meta {
+  margin-top: 48px; position: relative; z-index:1;
+  display: flex; align-items: center; gap: 20px;
+}
+.title-meta-line { width: 1px; height: 32px; background: var(--border); }
+
+/* ── Slide: section header ── */
+.slide-section {
+  position: relative; z-index: 1;
+}
+
+/* keyboard hint */
+.kbd-hint {
+  position: fixed; top: 24px; right: 28px;
+  font-family: var(--mono); font-size: 0.6rem;
+  color: var(--border); letter-spacing: 0.08em;
+  z-index: 200;
+}
+</style>
+</head>
+<body>
+
+<div class="kbd-hint">← → to navigate &nbsp;|&nbsp; click dots</div>
+
+<div class="deck" id="deck">
+
+  <!-- ═══════════════════════════════════════
+       SLIDE 1 — TITLE
+  ══════════════════════════════════════════ -->
+  <div class="slide active" id="s1">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <div class="title-eyebrow">
+      Global Tech Weekend Tbilisi 2026 &nbsp;·&nbsp; Product Review
+    </div>
+
+    <div class="title-main">
+      <h1>
+        <span class="accent-cyan">GTW</span><br/>
+        <span>Speaker Hub</span>
+      </h1>
+    </div>
+
+    <p class="title-sub">
+      A mobile-first event community platform — <br/>
+      messaging, networking &amp; speaker discovery for GTW Tbilisi attendees.
+    </p>
+
+    <div class="title-meta">
+      <div>
+        <div style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">Presented by</div>
+        <div style="font-size:0.95rem;font-weight:600">Keti Elizbarashvili</div>
+      </div>
+      <div class="title-meta-line"></div>
+      <div>
+        <div style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">Date</div>
+        <div style="font-size:0.95rem;">May 30, 2026</div>
+      </div>
+      <div class="title-meta-line"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <span class="tag tag-cyan">React 19</span>
+        <span class="tag tag-lime">Vite</span>
+        <span class="tag tag-violet">Vercel</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       SLIDE 2 — WHAT IS IT
+  ══════════════════════════════════════════ -->
+  <div class="slide" id="s2">
+    <div class="blob" style="width:500px;height:400px;background:rgba(0,253,255,0.05);top:-80px;right:-80px;"></div>
+
+    <div class="slide-section">
+      <div class="label">Overview</div>
+      <h2 style="margin-bottom:12px;">What is the <span class="accent-cyan">GTW Speaker Hub?</span></h2>
+      <p style="color:var(--muted);font-size:0.95rem;margin-bottom:36px;max-width:700px;">
+        A dedicated web app for everyone at GTW Tbilisi — speakers, founders, investors, volunteers —
+        giving the whole event a single place to communicate and connect in real time.
+      </p>
+
+      <div class="grid-3" style="gap:20px;">
+        <div class="card card-cyan">
+          <div style="font-size:1.8rem;margin-bottom:14px;">💬</div>
+          <h3 class="accent-cyan" style="margin-bottom:8px;">Community Chat</h3>
+          <p style="color:var(--muted);font-size:0.85rem;line-height:1.6;">Stage channels, announcements, direct messages — all in one Slack-style interface.</p>
+        </div>
+        <div class="card card-violet">
+          <div style="font-size:1.8rem;margin-bottom:14px;">🎤</div>
+          <h3 class="accent-violet" style="margin-bottom:8px;">Speaker Directory</h3>
+          <p style="color:var(--muted);font-size:0.85rem;line-height:1.6;">Browse all speakers by track, search by name, and open a DM directly from the card.</p>
+        </div>
+        <div class="card card-lime">
+          <div style="font-size:1.8rem;margin-bottom:14px;">👤</div>
+          <h3 class="accent-lime" style="margin-bottom:8px;">Attendee Profiles</h3>
+          <p style="color:var(--muted);font-size:0.85rem;line-height:1.6;">Each attendee has a profile with bio, social links, stage tags, and upcoming talks.</p>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div style="display:flex;gap:40px;align-items:center;">
+        <div style="text-align:center;">
+          <div style="font-family:var(--mono);font-size:2rem;font-weight:700;color:var(--cyan);">4</div>
+          <div style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;">Screens</div>
+        </div>
+        <div style="width:1px;height:40px;background:var(--border);"></div>
+        <div style="text-align:center;">
+          <div style="font-family:var(--mono);font-size:2rem;font-weight:700;color:var(--lime);">6</div>
+          <div style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;">Channels</div>
+        </div>
+        <div style="width:1px;height:40px;background:var(--border);"></div>
+        <div style="text-align:center;">
+          <div style="font-family:var(--mono);font-size:2rem;font-weight:700;color:var(--violet);">7</div>
+          <div style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;">People in DMs</div>
+        </div>
+        <div style="width:1px;height:40px;background:var(--border);"></div>
+        <div style="text-align:center;">
+          <div style="font-family:var(--mono);font-size:2rem;font-weight:700;color:var(--magenta);">8</div>
+          <div style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;">Speaker Profiles</div>
+        </div>
+        <div style="flex:1;"></div>
+        <div style="display:flex;gap:8px;">
+          <span class="tag tag-cyan">Mobile-first</span>
+          <span class="tag tag-lime">iOS safe</span>
+          <span class="tag tag-violet">In-app browsers</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       SLIDE 3 — 4 SCREENS
+  ══════════════════════════════════════════ -->
+  <div class="slide" id="s3">
+    <div class="blob" style="width:400px;height:400px;background:rgba(193,61,255,0.06);bottom:-80px;left:-80px;"></div>
+
+    <div class="slide-section">
+      <div class="label">Product</div>
+      <h2 style="margin-bottom:28px;">The <span class="accent-violet">4 Screens</span></h2>
+
+      <div class="grid-4">
+        <!-- Login -->
+        <div class="card" style="border-color:rgba(0,253,255,0.15);">
+          <div class="mockup" style="margin-bottom:14px;">
+            <div class="mockup-bar">
+              <div class="mockup-dot" style="background:#FF5F57;"></div>
+              <div class="mockup-dot" style="background:#FEBC2E;"></div>
+              <div class="mockup-dot" style="background:#28C840;"></div>
+            </div>
+            <div class="mockup-content">
+              <div style="text-align:center;padding:8px 0;">
+                <div style="font-family:var(--mono);font-size:0.75rem;color:var(--cyan);font-weight:700;">GTW</div>
+                <div style="font-size:0.6rem;color:var(--muted);margin-bottom:8px;">Speaker Hub</div>
+                <div style="background:rgba(0,253,255,0.08);border:1px solid rgba(0,253,255,0.2);border-radius:6px;padding:5px;margin-bottom:4px;font-size:0.6rem;color:var(--muted);">email</div>
+                <div style="background:rgba(0,253,255,0.08);border:1px solid rgba(0,253,255,0.2);border-radius:6px;padding:5px;margin-bottom:8px;font-size:0.6rem;color:var(--muted);">password</div>
+                <div style="background:var(--cyan);border-radius:6px;padding:5px;font-size:0.6rem;color:#000;font-weight:700;">Sign In</div>
+              </div>
+            </div>
+          </div>
+          <div style="font-family:var(--mono);font-size:0.7rem;color:var(--cyan);margin-bottom:4px;">/login</div>
+          <h3 style="margin-bottom:6px;">Login</h3>
+          <p style="font-size:0.78rem;color:var(--muted);line-height:1.5;">Branded entry. Email + password. Auth guard on all pages.</p>
+        </div>
+
+        <!-- Chat -->
+        <div class="card" style="border-color:rgba(195,251,26,0.15);">
+          <div class="mockup" style="margin-bottom:14px;">
+            <div class="mockup-bar">
+              <div style="font-size:0.55rem;color:var(--muted);"># general</div>
+            </div>
+            <div class="mockup-content" style="display:flex;gap:6px;padding:8px;">
+              <div style="width:36px;flex-shrink:0;">
+                <div style="font-size:0.55rem;color:var(--muted);padding:4px 0;border-bottom:1px solid var(--border);margin-bottom:4px;">CH</div>
+                <div style="font-size:0.5rem;color:var(--cyan);margin-bottom:2px;"># gen</div>
+                <div style="font-size:0.5rem;color:var(--muted);margin-bottom:2px;"># ann</div>
+                <div style="font-size:0.5rem;color:var(--muted);"># ai</div>
+              </div>
+              <div style="flex:1;">
+                <div style="margin-bottom:4px;">
+                  <div style="font-size:0.55rem;color:var(--lime);font-weight:700;">Ana <span style="color:var(--muted)">10:14</span></div>
+                  <div style="font-size:0.55rem;color:var(--white);">So excited! First time at GTW 🙌</div>
+                </div>
+                <div>
+                  <div style="font-size:0.55rem;color:var(--cyan);font-weight:700;">Nino <span style="color:var(--muted)">10:17</span></div>
+                  <div style="font-size:0.55rem;color:var(--white);">Speaker lounge 2nd floor!</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="font-family:var(--mono);font-size:0.7rem;color:var(--lime);margin-bottom:4px;">/app</div>
+          <h3 style="margin-bottom:6px;">Community Chat</h3>
+          <p style="font-size:0.78rem;color:var(--muted);line-height:1.5;">Channels + DMs. Typing indicator. Unread badges. Read-only announcements.</p>
+        </div>
+
+        <!-- Directory -->
+        <div class="card" style="border-color:rgba(193,61,255,0.15);">
+          <div class="mockup" style="margin-bottom:14px;">
+            <div class="mockup-bar">
+              <div style="font-size:0.55rem;color:var(--muted);">Speakers</div>
+            </div>
+            <div class="mockup-content" style="padding:8px;">
+              <div style="background:rgba(255,255,255,0.04);border-radius:4px;padding:4px 6px;margin-bottom:6px;font-size:0.55rem;color:var(--muted);">Search speakers…</div>
+              <div style="display:flex;gap:4px;margin-bottom:6px;">
+                <span style="background:rgba(0,253,255,0.1);border:1px solid rgba(0,253,255,0.3);border-radius:99px;padding:1px 5px;font-size:0.5rem;color:var(--cyan);">AI</span>
+                <span style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:99px;padding:1px 5px;font-size:0.5rem;color:var(--muted);">Fintech</span>
+                <span style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:99px;padding:1px 5px;font-size:0.5rem;color:var(--muted);">Web3</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:5px;padding:4px;background:rgba(255,255,255,0.03);border-radius:6px;margin-bottom:3px;">
+                <div style="width:16px;height:16px;background:var(--violet);border-radius:50%;opacity:0.7;"></div>
+                <div>
+                  <div style="font-size:0.55rem;font-weight:700;">Ana Beridze</div>
+                  <div style="font-size:0.5rem;color:var(--muted);">AI · DeepMind</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:5px;padding:4px;border-radius:6px;">
+                <div style="width:16px;height:16px;background:var(--lime);border-radius:50%;opacity:0.7;"></div>
+                <div>
+                  <div style="font-size:0.55rem;font-weight:700;">Giorgi K.</div>
+                  <div style="font-size:0.5rem;color:var(--muted);">Fintech · PayGe</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="font-family:var(--mono);font-size:0.7rem;color:var(--violet);margin-bottom:4px;">/directory</div>
+          <h3 style="margin-bottom:6px;">Speaker Directory</h3>
+          <p style="font-size:0.78rem;color:var(--muted);line-height:1.5;">Filter by track. Search. "Message" opens DM. LinkedIn links.</p>
+        </div>
+
+        <!-- Profile -->
+        <div class="card" style="border-color:rgba(255,0,64,0.15);">
+          <div class="mockup" style="margin-bottom:14px;">
+            <div class="mockup-bar">
+              <div style="font-size:0.55rem;color:var(--muted);">My Profile</div>
+            </div>
+            <div class="mockup-content" style="padding:8px;text-align:center;">
+              <div style="width:28px;height:28px;background:linear-gradient(135deg,var(--cyan),var(--violet));border-radius:50%;margin:0 auto 6px;"></div>
+              <div style="font-size:0.6rem;font-weight:700;margin-bottom:2px;">Ana Beridze</div>
+              <div style="font-size:0.5rem;color:var(--muted);margin-bottom:6px;">AI Researcher · DeepMind</div>
+              <div style="display:flex;justify-content:center;gap:4px;margin-bottom:6px;">
+                <span style="background:rgba(0,253,255,0.1);border:1px solid rgba(0,253,255,0.3);border-radius:99px;padding:1px 5px;font-size:0.45rem;color:var(--cyan);">AI</span>
+                <span style="background:rgba(0,253,255,0.1);border:1px solid rgba(0,253,255,0.2);border-radius:99px;padding:1px 5px;font-size:0.45rem;color:var(--cyan);">Georgia · UK</span>
+              </div>
+              <div style="font-size:0.5rem;color:var(--muted);line-height:1.4;">Talk: 14:30 · AI Stage</div>
+            </div>
+          </div>
+          <div style="font-family:var(--mono);font-size:0.7rem;color:var(--magenta);margin-bottom:4px;">/profile</div>
+          <h3 style="margin-bottom:6px;">Profile</h3>
+          <p style="font-size:0.78rem;color:var(--muted);line-height:1.5;">Bio, social links, stage tags, talk schedule, activity stats.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       SLIDE 4 — CHANNELS & TRACKS
+  ══════════════════════════════════════════ -->
+  <div class="slide" id="s4">
+    <div class="blob" style="width:500px;height:300px;background:rgba(195,251,26,0.04);top:0;right:-100px;"></div>
+
+    <div class="slide-section">
+      <div class="label">Chat</div>
+      <h2 style="margin-bottom:28px;">Channels &amp; <span class="accent-lime">Stage Tracks</span></h2>
+
+      <div class="grid-2" style="gap:32px;align-items:start;">
+        <div>
+          <div style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:16px;">Community Channels</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div class="card" style="padding:14px;display:flex;align-items:center;gap:12px;">
+              <span style="color:var(--muted);font-size:0.85rem;font-weight:700;">#</span>
+              <div style="flex:1;">
+                <div style="font-size:0.85rem;font-weight:600;">announcements</div>
+                <div style="font-size:0.75rem;color:var(--muted);">Official GTW updates</div>
+              </div>
+              <span class="tag tag-magenta">Read-only</span>
+            </div>
+            <div class="card" style="padding:14px;display:flex;align-items:center;gap:12px;">
+              <span style="color:var(--muted);font-size:0.85rem;font-weight:700;">#</span>
+              <div style="flex:1;">
+                <div style="font-size:0.85rem;font-weight:600;">general</div>
+                <div style="font-size:0.75rem;color:var(--muted);">Open conversation · 248 members</div>
+              </div>
+              <span class="tag tag-lime">Open</span>
+            </div>
+            <div class="card" style="padding:14px;display:flex;align-items:center;gap:12px;">
+              <span style="color:var(--muted);font-size:0.85rem;font-weight:700;">#</span>
+              <div style="flex:1;">
+                <div style="font-size:0.85rem;font-weight:600;">tbilisi-tips</div>
+                <div style="font-size:0.75rem;color:var(--muted);">Local city tips</div>
+              </div>
+              <span class="tag tag-lime">Open</span>
+            </div>
+            <div class="card" style="padding:14px;display:flex;align-items:center;gap:12px;">
+              <span style="color:var(--muted);font-size:0.85rem;font-weight:700;">#</span>
+              <div style="flex:1;">
+                <div style="font-size:0.85rem;font-weight:600;">side-events</div>
+                <div style="font-size:0.75rem;color:var(--muted);">Community events</div>
+              </div>
+              <span class="tag tag-lime">Open</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:16px;">Stage Track Channels</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div class="card" style="padding:14px;display:flex;align-items:center;gap:12px;border-color:rgba(0,253,255,0.2);">
+              <div style="width:10px;height:10px;background:var(--cyan);border-radius:50%;box-shadow:0 0 8px var(--cyan);"></div>
+              <div style="flex:1;">
+                <div style="font-size:0.85rem;font-weight:600;">#stage-ai</div>
+              </div>
+              <span class="tag tag-cyan">AI</span>
+            </div>
+            <div class="card" style="padding:14px;display:flex;align-items:center;gap:12px;border-color:rgba(195,251,26,0.2);">
+              <div style="width:10px;height:10px;background:var(--lime);border-radius:50%;box-shadow:0 0 8px var(--lime);"></div>
+              <div style="flex:1;">
+                <div style="font-size:0.85rem;font-weight:600;">#stage-fintech</div>
+              </div>
+              <span class="tag tag-lime">Fintech</span>
+            </div>
+          </div>
+
+          <div style="margin-top:24px;">
+            <div style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:16px;">DM Features</div>
+            <ul class="checklist">
+              <li>
+                <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                <span style="font-size:0.85rem;">Message any attendee directly</span>
+              </li>
+              <li>
+                <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                <span style="font-size:0.85rem;">Typing indicator animation</span>
+              </li>
+              <li>
+                <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                <span style="font-size:0.85rem;">Unread badge counters per conversation</span>
+              </li>
+              <li>
+                <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                <span style="font-size:0.85rem;">Message preview in sidebar</span>
+              </li>
+              <li>
+                <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                <span style="font-size:0.85rem;">Open DM from directory — seamless redirect</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       SLIDE 5 — USER FLOWS
+  ══════════════════════════════════════════ -->
+  <div class="slide" id="s5">
+    <div class="blob" style="width:400px;height:400px;background:rgba(0,253,255,0.04);bottom:0;right:0;"></div>
+
+    <div class="slide-section">
+      <div class="label">Flows</div>
+      <h2 style="margin-bottom:28px;">How Users <span class="accent-cyan">Move Through</span> the App</h2>
+
+      <div style="display:flex;flex-direction:column;gap:20px;">
+
+        <div class="card card-cyan">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+            <span class="tag tag-cyan">Flow 1</span>
+            <span style="font-size:0.85rem;font-weight:600;">Attendee joins &amp; communicates</span>
+          </div>
+          <div class="flow">
+            <div class="flow-step">Open app</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">Login</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">#general chat</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">Browse channels</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">Post a message</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step" style="border-color:rgba(0,253,255,0.3);color:var(--cyan);">Start a DM</div>
+          </div>
+        </div>
+
+        <div class="card card-violet">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+            <span class="tag tag-violet">Flow 2</span>
+            <span style="font-size:0.85rem;font-weight:600;">Networking via directory</span>
+          </div>
+          <div class="flow">
+            <div class="flow-step">Tap "Speakers"</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">Filter by track (AI)</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">Find someone</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">Tap "Message"</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step" style="border-color:rgba(193,61,255,0.3);color:var(--violet);">DM opens in chat</div>
+          </div>
+        </div>
+
+        <div class="card card-magenta">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+            <span class="tag tag-magenta">Flow 3</span>
+            <span style="font-size:0.85rem;font-weight:600;">Announcements (admin broadcast)</span>
+          </div>
+          <div class="flow">
+            <div class="flow-step">Organizer posts in #announcements</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">All see notification dot 🔔</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">Open channel</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step" style="border-color:rgba(255,0,64,0.3);color:var(--magenta);">Read-only — no reply</div>
+          </div>
+        </div>
+
+        <div class="card card-lime">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+            <span class="tag tag-lime">Flow 4</span>
+            <span style="font-size:0.85rem;font-weight:600;">Profile → DM</span>
+          </div>
+          <div class="flow">
+            <div class="flow-step">See message in chat</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">Tap name</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">View profile + bio</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">LinkedIn / Website</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step" style="border-color:rgba(195,251,26,0.3);color:var(--lime);">Tap "Message"</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       SLIDE 6 — WHAT'S DONE
+  ══════════════════════════════════════════ -->
+  <div class="slide" id="s6">
+    <div class="blob" style="width:400px;height:400px;background:rgba(195,251,26,0.05);top:-60px;right:0;"></div>
+
+    <div class="slide-section">
+      <div class="label">Status</div>
+      <h2 style="margin-bottom:8px;">What Is <span class="accent-lime">Done</span> Right Now</h2>
+      <p style="color:var(--muted);font-size:0.88rem;margin-bottom:28px;">Everything below is live, working, and deployed on Vercel.</p>
+
+      <div class="grid-2" style="gap:24px;">
+        <div>
+          <div style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:14px;">UI &amp; Design</div>
+          <div class="status-row"><div class="status-dot dot-green"></div><span>Login screen with GTW brand + logo</span></div>
+          <div class="status-row"><div class="status-dot dot-green"></div><span>Community chat — 6 channels, DMs</span></div>
+          <div class="status-row"><div class="status-dot dot-green"></div><span>Typing indicator &amp; simulated replies</span></div>
+          <div class="status-row"><div class="status-dot dot-green"></div><span>Unread badge counters</span></div>
+          <div class="status-row"><div class="status-dot dot-green"></div><span>Read-only #announcements channel</span></div>
+          <div class="status-row"><div class="status-dot dot-green"></div><span>Speaker directory — filter + search</span></div>
+          <div class="status-row"><div class="status-dot dot-green"></div><span>"Message" from directory → opens DM</span></div>
+          <div class="status-row"><div class="status-dot dot-green"></div><span>Profile page — bio, tags, social links</span></div>
+        </div>
+        <div>
+          <div style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:14px;">Mobile &amp; Infra</div>
+          <div class="status-row"><div class="status-dot dot-green"></div><span>Bottom nav bar (Channels / DMs / Speakers / Profile)</span></div>
+          <div class="status-row"><div class="status-dot dot-green"></div><span>Slide-in mobile drawer for navigation</span></div>
+          <div class="status-row"><div class="status-dot dot-green"></div><span>iOS zoom fix (16px inputs)</span></div>
+          <div class="status-row"><div class="status-dot dot-green"></div><span>dvh/100vh fallback for in-app browsers</span></div>
+          <div class="status-row"><div class="status-dot dot-green"></div><span>Vercel deployment + SPA routing</span></div>
+          <div class="status-row"><div class="status-dot dot-green"></div><span>Auth guard on all protected pages</span></div>
+          <div style="margin-top:20px;padding:14px;background:rgba(195,251,26,0.05);border:1px solid rgba(195,251,26,0.15);border-radius:12px;">
+            <div style="font-family:var(--mono);font-size:0.7rem;color:var(--lime);margin-bottom:6px;">Stack</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <span class="tag tag-lime">React 19</span>
+              <span class="tag tag-lime">React Router 7</span>
+              <span class="tag tag-lime">Vite 8</span>
+              <span class="tag tag-lime">Vercel</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       SLIDE 7 — OPEN QUESTIONS
+  ══════════════════════════════════════════ -->
+  <div class="slide" id="s7">
+    <div class="blob" style="width:500px;height:400px;background:rgba(255,0,64,0.05);bottom:-100px;right:-80px;"></div>
+
+    <div class="slide-section">
+      <div class="label">To Clarify</div>
+      <h2 style="margin-bottom:8px;">What We <span class="accent-magenta">Need to Decide</span></h2>
+      <p style="color:var(--muted);font-size:0.88rem;margin-bottom:28px;">These are blockers or open product decisions before we can finalize the build.</p>
+
+      <div class="grid-2" style="gap:20px;">
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div class="card card-magenta" style="padding:18px;">
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <span class="tag tag-magenta" style="flex-shrink:0;margin-top:1px;">1</span>
+              <div>
+                <h3 style="margin-bottom:4px;">Real Backend / Database</h3>
+                <p style="font-size:0.8rem;color:var(--muted);line-height:1.5;">All data is hardcoded. No real users, no persistence. Do we need a DB before launch? Which service?</p>
+              </div>
+            </div>
+          </div>
+          <div class="card card-magenta" style="padding:18px;">
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <span class="tag tag-magenta" style="flex-shrink:0;margin-top:1px;">2</span>
+              <div>
+                <h3 style="margin-bottom:4px;">Real Authentication</h3>
+                <p style="font-size:0.8rem;color:var(--muted);line-height:1.5;">Any email/password works right now. Magic links? Self-registration? Who controls the user list?</p>
+              </div>
+            </div>
+          </div>
+          <div class="card card-magenta" style="padding:18px;">
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <span class="tag tag-magenta" style="flex-shrink:0;margin-top:1px;">3</span>
+              <div>
+                <h3 style="margin-bottom:4px;">Real-time Messaging</h3>
+                <p style="font-size:0.8rem;color:var(--muted);line-height:1.5;">Messages disappear on refresh. Do we need live WebSocket sync, or is async "post + refresh" OK?</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div class="card card-magenta" style="padding:18px;">
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <span class="tag tag-magenta" style="flex-shrink:0;margin-top:1px;">4</span>
+              <div>
+                <h3 style="margin-bottom:4px;">Who Are the Users?</h3>
+                <p style="font-size:0.8rem;color:var(--muted);line-height:1.5;">Speakers only? All attendees? Expected simultaneous users? Invite-only or public access?</p>
+              </div>
+            </div>
+          </div>
+          <div class="card card-magenta" style="padding:18px;">
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <span class="tag tag-magenta" style="flex-shrink:0;margin-top:1px;">5</span>
+              <div>
+                <h3 style="margin-bottom:4px;">Admin / Announcements</h3>
+                <p style="font-size:0.8rem;color:var(--muted);line-height:1.5;">Who can post official announcements? Is there an admin panel, or a special organizer account?</p>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="padding:18px;border-color:rgba(245,158,11,0.2);">
+            <div style="font-family:var(--mono);font-size:0.65rem;color:#F59E0B;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;">Nice to Have Later</div>
+            <div class="status-row" style="font-size:0.8rem;"><div class="status-dot dot-yellow"></div><span>Speaker bio/photo data source (CMS? spreadsheet?)</span></div>
+            <div class="status-row" style="font-size:0.8rem;"><div class="status-dot dot-yellow"></div><span>Conference schedule / agenda screen</span></div>
+            <div class="status-row" style="font-size:0.8rem;"><div class="status-dot dot-yellow"></div><span>Push notifications</span></div>
+            <div class="status-row" style="font-size:0.8rem;border:none"><div class="status-dot dot-yellow"></div><span>Connect / follow feature (beyond DM)</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       SLIDE 8 — NEXT STEPS
+  ══════════════════════════════════════════ -->
+  <div class="slide" id="s8">
+    <div class="blob" style="width:600px;height:500px;background:rgba(0,253,255,0.05);top:-100px;left:-100px;"></div>
+    <div class="blob" style="width:400px;height:400px;background:rgba(193,61,255,0.06);bottom:-80px;right:-60px;"></div>
+
+    <div class="slide-section" style="display:flex;flex-direction:column;height:100%;justify-content:center;">
+      <div class="label">Next Steps</div>
+      <h2 style="margin-bottom:32px;">Recommended <span class="accent-cyan">Path Forward</span></h2>
+
+      <div style="display:flex;flex-direction:column;gap:14px;max-width:720px;">
+
+        <div style="display:flex;align-items:center;gap:20px;">
+          <div style="font-family:var(--mono);font-size:1.5rem;font-weight:700;color:var(--cyan);width:36px;flex-shrink:0;text-align:center;">1</div>
+          <div style="flex:1;height:1px;background:linear-gradient(90deg,var(--cyan),transparent);"></div>
+          <div style="flex:5;">
+            <div style="font-weight:600;margin-bottom:2px;">Decide on backend</div>
+            <div style="font-size:0.82rem;color:var(--muted);">Supabase = simplest option (auth + DB + realtime in one). Firebase or custom API are alternatives.</div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:20px;">
+          <div style="font-family:var(--mono);font-size:1.5rem;font-weight:700;color:var(--lime);width:36px;flex-shrink:0;text-align:center;">2</div>
+          <div style="flex:1;height:1px;background:linear-gradient(90deg,var(--lime),transparent);"></div>
+          <div style="flex:5;">
+            <div style="font-weight:600;margin-bottom:2px;">Confirm user scope &amp; login method</div>
+            <div style="font-size:0.82rem;color:var(--muted);">Who gets access? Magic link invite, self-registration, or manual list?</div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:20px;">
+          <div style="font-family:var(--mono);font-size:1.5rem;font-weight:700;color:var(--violet);width:36px;flex-shrink:0;text-align:center;">3</div>
+          <div style="flex:1;height:1px;background:linear-gradient(90deg,var(--violet),transparent);"></div>
+          <div style="flex:5;">
+            <div style="font-weight:600;margin-bottom:2px;">Get real speaker data</div>
+            <div style="font-size:0.82rem;color:var(--muted);">A spreadsheet with names, bios, photos, LinkedIn is enough to start. We'll wire it in.</div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:20px;">
+          <div style="font-family:var(--mono);font-size:1.5rem;font-weight:700;color:var(--magenta);width:36px;flex-shrink:0;text-align:center;">4</div>
+          <div style="flex:1;height:1px;background:linear-gradient(90deg,var(--magenta),transparent);"></div>
+          <div style="flex:5;">
+            <div style="font-weight:600;margin-bottom:2px;">Decide: real-time vs async chat</div>
+            <div style="font-size:0.82rem;color:var(--muted);">Real-time (Supabase channels) is harder but impressive. Async is simpler. Your call.</div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:20px;">
+          <div style="font-family:var(--mono);font-size:1.5rem;font-weight:700;color:#F59E0B;width:36px;flex-shrink:0;text-align:center;">5</div>
+          <div style="flex:1;height:1px;background:linear-gradient(90deg,#F59E0B,transparent);"></div>
+          <div style="flex:5;">
+            <div style="font-weight:600;margin-bottom:2px;">Design sign-off</div>
+            <div style="font-size:0.82rem;color:var(--muted);">Confirm stage colors, logo usage, and any missing brand elements.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:40px;padding:20px 24px;background:rgba(0,253,255,0.05);border:1px solid rgba(0,253,255,0.12);border-radius:16px;display:flex;align-items:center;gap:16px;max-width:720px;">
+        <div style="font-size:1.5rem;">🚀</div>
+        <div>
+          <div style="font-weight:600;margin-bottom:3px;">The MVP shell is ready.</div>
+          <div style="font-size:0.85rem;color:var(--muted);">All screens are built and deployed. The next milestone is wiring real data and a real backend — everything else is already in place.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- Navigation -->
+<nav class="nav">
+  <button class="nav-btn" id="prevBtn" onclick="go(-1)" aria-label="Previous">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+  <div class="progress-dots" id="dots"></div>
+  <span class="slide-count" id="count"></span>
+  <button class="nav-btn" id="nextBtn" onclick="go(1)" aria-label="Next">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+  </button>
+</nav>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const dotsEl  = document.getElementById('dots');
+  const countEl = document.getElementById('count');
+  let cur = 0;
+
+  // Build dots
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  });
+
+  function goTo(n) {
+    slides[cur].classList.remove('active');
+    dotsEl.children[cur].classList.remove('active');
+    cur = Math.max(0, Math.min(n, slides.length - 1));
+    slides[cur].classList.add('active');
+    dotsEl.children[cur].classList.add('active');
+    countEl.textContent = `${cur + 1} / ${slides.length}`;
+  }
+
+  function go(dir) { goTo(cur + dir); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); go(1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')                    { e.preventDefault(); go(-1); }
+  });
+
+  goTo(0);
+</script>
+</body>
+</html>

@@ -4,7 +4,7 @@ export const PEOPLE = {
   david:  { name: 'David Lomidze',        role: 'Venture', avatar: 'https://i.pravatar.cc/36?img=55', online: false },
   luka:   { name: 'Luka Chikovaní',       role: 'Creative Tech', avatar: 'https://i.pravatar.cc/36?img=22', online: true },
   sophie: { name: 'Sophie Merabishvili',  role: 'AI',      avatar: 'https://i.pravatar.cc/36?img=61', online: true },
-  mari:   { name: 'Mari Jikia',           role: 'AI',      avatar: 'https://i.pravatar.cc/36?img=44', online: false },
+  mari:   { name: 'Mari Jikia',           role: 'Volunteer', avatar: 'https://i.pravatar.cc/36?img=44', online: true,  volunteer: true },
   tato:   { name: 'Tato Sulakvelidze',    role: 'FinTech', avatar: 'https://i.pravatar.cc/36?img=68', online: true },
 };
 

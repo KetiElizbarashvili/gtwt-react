@@ -336,14 +336,18 @@ h4 { font-size: 1.125rem; }
 }
 
 /* ---------------------------------------------------------
-   9. Card
+   9. Card — glassmorphism
    --------------------------------------------------------- */
 .card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: rgba(8, 11, 32, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: var(--radius-lg);
   padding: var(--space-5);
+  transition: border-color var(--transition);
 }
+.card:hover { border-color: rgba(0, 253, 255, 0.12); }
 .card-sm { padding: var(--space-4); }
 
 /* ---------------------------------------------------------
@@ -365,14 +369,16 @@ h4 { font-size: 1.125rem; }
   overflow: hidden;
 }
 
-/* Sidebar */
+/* Sidebar — glassmorphism */
 .sidebar {
   width: var(--sidebar-w);
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  background: var(--color-surface);
-  border-right: 1px solid var(--color-border);
+  background: rgba(8, 11, 32, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -391,10 +397,12 @@ h4 { font-size: 1.125rem; }
    --------------------------------------------------------- */
 .sidebar-header {
   padding: var(--space-4) var(--space-4) var(--space-3);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   position: sticky;
   top: 0;
-  background: var(--color-surface);
+  background: rgba(8, 11, 32, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   z-index: 10;
 }
 
@@ -487,7 +495,7 @@ h4 { font-size: 1.125rem; }
 }
 
 /* ---------------------------------------------------------
-   13. Top Nav / Topbar
+   13. Top Nav / Topbar — glassmorphism
    --------------------------------------------------------- */
 .topbar {
   height: 56px;
@@ -495,9 +503,14 @@ h4 { font-size: 1.125rem; }
   align-items: center;
   gap: var(--space-3);
   padding: 0 var(--space-5);
-  border-bottom: 1px solid var(--color-border);
-  background: var(--color-surface);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(8, 11, 32, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 50;
 }
 .topbar-title {
   font-family: var(--font-display);
@@ -513,30 +526,34 @@ h4 { font-size: 1.125rem; }
 .topbar-actions { display: flex; align-items: center; gap: var(--space-2); }
 
 /* ---------------------------------------------------------
-   14. Chat / Message Feed
+   14. Chat / Message Feed — #5 increased vertical spacing
    --------------------------------------------------------- */
 .messages-feed {
   flex: 1;
   overflow-y: auto;
-  padding: var(--space-4) var(--space-5);
+  padding: var(--space-5);
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 2px;
 }
 
 .message-group {
   display: flex;
   gap: var(--space-3);
-  padding: var(--space-2) 0;
+  padding: var(--space-3) var(--space-2);   /* #5: more vertical padding */
+  border-radius: var(--radius-md);
+  position: relative;
+  transition: background var(--transition);
 }
-.message-group:hover { background: rgba(255,255,255,0.015); border-radius: var(--radius-md); }
+.message-group:hover { background: rgba(255,255,255,0.025); }
 
 .message-body { flex: 1; min-width: 0; }
 .message-meta {
   display: flex;
   align-items: baseline;
   gap: var(--space-2);
-  margin-bottom: 3px;
+  margin-bottom: 5px;   /* #5: more space before message text */
+  flex-wrap: wrap;
 }
 .message-author {
   font-family: var(--font-display);
@@ -549,7 +566,7 @@ h4 { font-size: 1.125rem; }
 }
 .message-text {
   font-size: 0.9rem;
-  line-height: 1.55;
+  line-height: 1.6;    /* #5: slightly more line height */
   color: var(--color-text-primary);
   word-break: break-word;
 }
@@ -600,30 +617,36 @@ h4 { font-size: 1.125rem; }
 .blur-orb-violet { background: rgba(193,61,255,0.12); }
 .blur-orb-blue   { background: rgba(26,60,251,0.14); }
 
-/* Message composer */
+/* Message composer — glassmorphism */
 .composer {
-  padding: var(--space-3) var(--space-4) var(--space-4);
-  border-top: 1px solid var(--color-border);
+  padding: var(--space-2) var(--space-4) var(--space-4);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   flex-shrink: 0;
+  background: rgba(8, 11, 32, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 .composer-inner {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  background: var(--color-bg);
-  border: 1.5px solid var(--color-border);
+  background: rgba(0, 0, 0, 0.4);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-lg);
   padding: 0 var(--space-3);
-  transition: border-color var(--transition);
+  transition: border-color var(--transition), box-shadow var(--transition);
 }
-.composer-inner:focus-within { border-color: var(--color-cyan); }
+.composer-inner:focus-within {
+  border-color: rgba(0, 253, 255, 0.5);
+  box-shadow: 0 0 0 3px rgba(0, 253, 255, 0.08);
+}
 .composer-input {
   flex: 1;
   background: transparent;
   border: none;
   outline: none;
   color: var(--color-text-primary);
-  font-size: 0.9rem;
+  font-size: 1rem;
   height: var(--touch-min);
   padding: 0;
 }
@@ -641,7 +664,8 @@ h4 { font-size: 1.125rem; }
   border-radius: var(--radius-md);
   transition: background var(--transition);
 }
-.composer-send:hover { background: rgba(0,240,255,0.1); }
+.composer-send:hover { background: rgba(0, 253, 255, 0.1); }
+.composer-send:disabled { color: rgba(255, 255, 255, 0.15); cursor: default; }
 
 /* ---------------------------------------------------------
    15. Directory
@@ -689,20 +713,22 @@ h4 { font-size: 1.125rem; }
 }
 
 .speaker-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: rgba(8, 11, 32, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: var(--radius-lg);
   padding: var(--space-5);
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  transition: border-color var(--transition), transform var(--transition);
+  transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
   cursor: pointer;
 }
 .speaker-card:hover {
-  border-color: rgba(0,253,255,0.3);
+  border-color: rgba(0, 253, 255, 0.3);
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0,253,255,0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 253, 255, 0.08) inset;
 }
 .speaker-card-top {
   display: flex;
@@ -865,16 +891,17 @@ h4 { font-size: 1.125rem; }
 ::-webkit-scrollbar-thumb:hover { background: #374151; }
 
 /* ---------------------------------------------------------
-   19. Mobile — Bottom Nav
+   19. Mobile — Bottom Nav — glassmorphism
    --------------------------------------------------------- */
 .mobile-nav {
   display: none;
   position: fixed;
   bottom: 0; left: 0; right: 0;
-  background: var(--color-surface);
-  border-top: 1px solid var(--color-border);
+  background: rgba(8, 11, 32, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   z-index: 100;
-  /* padding-bottom grows the nav tray for iOS home indicator */
   padding-bottom: env(safe-area-inset-bottom);
 }
 .mobile-nav-inner {
@@ -932,16 +959,16 @@ h4 { font-size: 1.125rem; }
 .mobile-menu-btn:active { background: rgba(255,255,255,0.1); }
 
 /* ---------------------------------------------------------
-   21. Mobile Drawer (Bottom Sheet)
+   21. Mobile Drawer (Bottom Sheet) — glassmorphism
    --------------------------------------------------------- */
 .drawer-overlay {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.65);
+  background: rgba(0, 0, 0, 0.65);
   z-index: 300;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   opacity: 0;
   transition: opacity 0.25s ease;
   pointer-events: none;
@@ -956,8 +983,10 @@ h4 { font-size: 1.125rem; }
   position: fixed;
   left: 0; right: 0; bottom: 0;
   flex-direction: column;
-  background: var(--color-surface);
-  border-top: 1px solid var(--color-border);
+  background: rgba(8, 11, 32, 0.96);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   z-index: 301;
   max-height: 82dvh;
@@ -967,6 +996,7 @@ h4 { font-size: 1.125rem; }
   transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+  box-shadow: 0 -24px 64px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 253, 255, 0.04) inset;
 }
 .mobile-drawer.open {
   transform: translateY(0);
@@ -1044,11 +1074,18 @@ h4 { font-size: 1.125rem; }
   /* Show mobile chrome, hide desktop chrome */
   .sidebar { display: none; }
   .mobile-nav { display: block; }
-  .mobile-menu-btn { display: flex; }
+  .mobile-menu-btn { display: none; } /* #3: hamburger removed from topbar */
   .mobile-drawer { display: flex; }
   .drawer-overlay { display: block; }
   .admin-sidebar { display: none; }
   .admin-main { padding: var(--space-4); }
+
+  /* #1 CRITICAL FIX: shrink app-shell to account for fixed bottom nav.
+     The composer no longer needs extra padding-bottom — the layout handles it. */
+  .app-shell {
+    height: calc(100vh - 60px - env(safe-area-inset-bottom));
+    height: calc(100dvh - 60px - env(safe-area-inset-bottom));
+  }
 
   /* Topbar */
   .topbar {
@@ -1067,17 +1104,14 @@ h4 { font-size: 1.125rem; }
     width: auto;
   }
 
-  /* Messages feed */
+  /* Messages feed — no extra bottom padding; layout handles spacing */
   .messages-feed {
-    padding: var(--space-3);
-    /* extra bottom clearance: mobile nav + safe area */
-    padding-bottom: calc(var(--space-3) + 60px + env(safe-area-inset-bottom));
+    padding: var(--space-3) var(--space-3) var(--space-2);
   }
 
-  /* Composer — stick above mobile nav with safe area */
+  /* Composer — simple padding, no bottom clearance hack needed */
   .composer {
-    padding: var(--space-2) var(--space-3);
-    padding-bottom: calc(var(--space-3) + 60px + env(safe-area-inset-bottom));
+    padding: var(--space-2) var(--space-3) var(--space-3);
   }
 
   /* Directory */
@@ -1089,7 +1123,7 @@ h4 { font-size: 1.125rem; }
   .directory-filters { padding: var(--space-3); }
   .results-info { padding: var(--space-2) var(--space-3); }
   .directory-scroll-area {
-    padding-bottom: 0; /* handled by directory-grid padding-bottom */
+    padding-bottom: 0;
   }
 
   /* Profile */

@@ -4,17 +4,19 @@ import { GtwLogo } from '../components/GtwLogo'
 
 export default function LoginPage() {
   const navigate = useNavigate()
-  const [tab, setTab]           = useState('signin')
-  const [email, setEmail]       = useState('')
-  const [password, setPassword] = useState('')
-  const [showPw, setShowPw]     = useState(false)
-  const [error, setError]       = useState(false)
-  const [loading, setLoading]   = useState(false)
-  const [phase, setPhase]       = useState('login') // 'login' | 'newpw'
-  const [newPw, setNewPw]       = useState('')
+  const [tab, setTab]             = useState('signin')
+  const [email, setEmail]         = useState('')
+  const [password, setPassword]   = useState('')
+  const [showPw, setShowPw]       = useState(false)
+  const [error, setError]         = useState(false)
+  const [loading, setLoading]     = useState(false)
+  const [phase, setPhase]         = useState('login') // 'login' | 'newpw'
+  const [newPw, setNewPw]         = useState('')
   const [confirmPw, setConfirmPw] = useState('')
-  const [strength, setStrength] = useState(0)
-  const [pwMatch, setPwMatch]   = useState(true)
+  const [showNewPw, setShowNewPw]     = useState(false)
+  const [showConfirmPw, setShowConfirmPw] = useState(false)
+  const [strength, setStrength]   = useState(0)
+  const [pwMatch, setPwMatch]     = useState(true)
   const [resetEmail, setResetEmail] = useState('')
   const [resetSent, setResetSent] = useState(false)
 
@@ -29,6 +31,13 @@ export default function LoginPage() {
     if (/[0-9]/.test(val)) s++
     if (/[^A-Za-z0-9]/.test(val)) s++
     return s
+  }
+
+  // #6: switching to forgot tab prefills email
+  function switchToForgot() {
+    setTab('forgot')
+    setResetEmail(email)
+    setResetSent(false)
   }
 
   function handleSignIn() {
@@ -56,6 +65,7 @@ export default function LoginPage() {
   }
 
   function handleReset() {
+    if (!resetEmail) return
     setResetSent(true)
   }
 
@@ -79,28 +89,32 @@ export default function LoginPage() {
       <style>{`
         .login-card {
           width: 100%; max-width: 420px;
-          background: var(--color-surface);
-          border: 1px solid var(--color-border);
+          background: rgba(8,11,32,0.85);
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
+          border: 1px solid rgba(255,255,255,0.08);
           border-radius: var(--radius-xl);
           padding: var(--space-8);
           position: relative; overflow: hidden;
           animation: slideIn 0.4s ease;
+          box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,253,255,0.06) inset;
         }
         .login-card::before {
           content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
           background: linear-gradient(90deg, var(--color-cyan), var(--color-violet), var(--color-magenta));
         }
         @keyframes slideIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
-        .tabs { display:flex; background:var(--color-bg); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:3px; margin-bottom:var(--space-5); }
+        .tabs { display:flex; background:rgba(0,0,0,0.3); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:3px; margin-bottom:var(--space-5); }
         .tab-btn { flex:1; height:36px; background:none; border:none; border-radius:var(--radius-sm); color:var(--color-text-muted); font-family:var(--font-label); font-size:0.7rem; letter-spacing:0.06em; text-transform:uppercase; cursor:pointer; transition:background var(--transition),color var(--transition); }
-        .tab-btn.active { background:var(--color-surface); color:var(--color-text-primary); }
+        .tab-btn.active { background:rgba(255,255,255,0.08); color:var(--color-text-primary); }
         .alert { padding:var(--space-3) var(--space-4); border-radius:var(--radius-md); font-size:0.875rem; display:flex; align-items:flex-start; gap:var(--space-2); }
         .alert-error { background:rgba(255,0,64,0.08); border:1px solid rgba(255,0,64,0.25); color:var(--color-magenta); }
         .alert-info  { background:rgba(0,253,255,0.06); border:1px solid rgba(0,253,255,0.2); color:var(--color-cyan); }
         .alert-success { background:rgba(195,251,26,0.06); border:1px solid rgba(195,251,26,0.2); color:var(--color-lime); }
         .input-with-toggle { position:relative; }
         .input-with-toggle .form-input { padding-right:48px; }
-        .pw-toggle { position:absolute; right:4px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--color-text-muted); width:36px; height:36px; display:flex; align-items:center; justify-content:center; border-radius:var(--radius-md); }
+        .pw-toggle { position:absolute; right:4px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--color-text-muted); width:36px; height:36px; display:flex; align-items:center; justify-content:center; border-radius:var(--radius-md); transition:color var(--transition); }
+        .pw-toggle:hover { color:var(--color-text-primary); }
         .pw-strength-bar { height:3px; background:var(--color-border); border-radius:99px; overflow:hidden; margin-top:6px; }
         .pw-strength-fill { height:100%; border-radius:99px; transition:width 0.3s ease,background 0.3s ease; }
         .step-pill { display:inline-flex; align-items:center; gap:var(--space-2); background:rgba(195,251,26,0.1); border:1px solid rgba(195,251,26,0.25); border-radius:var(--radius-full); padding:4px 12px; font-family:var(--font-label); font-size:0.65rem; letter-spacing:0.08em; color:var(--color-lime); }
@@ -121,7 +135,8 @@ export default function LoginPage() {
 
           <div className="tabs">
             <button className={`tab-btn${tab === 'signin' ? ' active' : ''}`} onClick={() => setTab('signin')}>Sign In</button>
-            <button className={`tab-btn${tab === 'forgot' ? ' active' : ''}`} onClick={() => setTab('forgot')}>Forgot Password</button>
+            {/* #6: prefill resetEmail when switching to forgot */}
+            <button className={`tab-btn${tab === 'forgot' ? ' active' : ''}`} onClick={switchToForgot}>Forgot Password</button>
           </div>
 
           {tab === 'signin' && (
@@ -138,10 +153,15 @@ export default function LoginPage() {
               </div>
               <div className="form-group">
                 <label className="form-label">Password</label>
+                {/* #7: eye icon already present here */}
                 <div className="input-with-toggle">
                   <input className="form-input" type={showPw ? 'text' : 'password'} placeholder="Enter your password" value={password} onChange={e => setPassword(e.target.value)} autoComplete="current-password" onKeyDown={e => e.key === 'Enter' && handleSignIn()} />
-                  <button type="button" className="pw-toggle" onClick={() => setShowPw(p => !p)}>
-                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                  <button type="button" className="pw-toggle" onClick={() => setShowPw(p => !p)} aria-label={showPw ? 'Hide password' : 'Show password'}>
+                    {showPw ? (
+                      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>
+                    ) : (
+                      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                    )}
                   </button>
                 </div>
               </div>
@@ -161,19 +181,21 @@ export default function LoginPage() {
               </div>
               <div className="form-group">
                 <label className="form-label">Email Address</label>
-                <input className="form-input" type="email" placeholder="you@example.com" value={resetEmail} onChange={e => setResetEmail(e.target.value)} />
+                {/* #6: value prefilled from sign-in email */}
+                <input className="form-input" type="email" placeholder="you@example.com" value={resetEmail} onChange={e => setResetEmail(e.target.value)} autoFocus />
               </div>
-              <button className="btn btn-primary btn-block" onClick={handleReset}>Send Reset Link</button>
+              <button className="btn btn-primary btn-block" onClick={handleReset} disabled={!resetEmail}>Send Reset Link</button>
               {resetSent && (
                 <div className="alert alert-success">
                   <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/></svg>
-                  Reset link sent! Check your inbox.
+                  Reset link sent to <strong>{resetEmail}</strong>. Check your inbox.
                 </div>
               )}
             </div>
           )}
         </div>
       ) : (
+        // #7: eye icons on new password + confirm password
         <div className="login-card">
           <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:'var(--space-3)', marginBottom:'var(--space-6)', textAlign:'center' }}>
             <span className="step-pill">
@@ -189,7 +211,20 @@ export default function LoginPage() {
             <div className="form-group">
               <label className="form-label">New Password</label>
               <div className="input-with-toggle">
-                <input className="form-input" type="password" placeholder="Minimum 8 characters" value={newPw} onChange={e => { setNewPw(e.target.value); setStrength(calcStrength(e.target.value)) }} />
+                <input
+                  className="form-input"
+                  type={showNewPw ? 'text' : 'password'}
+                  placeholder="Minimum 8 characters"
+                  value={newPw}
+                  onChange={e => { setNewPw(e.target.value); setStrength(calcStrength(e.target.value)) }}
+                />
+                <button type="button" className="pw-toggle" onClick={() => setShowNewPw(p => !p)} aria-label={showNewPw ? 'Hide' : 'Show'}>
+                  {showNewPw ? (
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>
+                  ) : (
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                  )}
+                </button>
               </div>
               {newPw && (
                 <>
@@ -202,7 +237,23 @@ export default function LoginPage() {
             </div>
             <div className="form-group">
               <label className="form-label">Confirm Password</label>
-              <input className="form-input" type="password" placeholder="Repeat new password" value={confirmPw} onChange={e => setConfirmPw(e.target.value)} />
+              <div className="input-with-toggle">
+                <input
+                  className="form-input"
+                  type={showConfirmPw ? 'text' : 'password'}
+                  placeholder="Repeat new password"
+                  value={confirmPw}
+                  onChange={e => setConfirmPw(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleSetPassword()}
+                />
+                <button type="button" className="pw-toggle" onClick={() => setShowConfirmPw(p => !p)} aria-label={showConfirmPw ? 'Hide' : 'Show'}>
+                  {showConfirmPw ? (
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>
+                  ) : (
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                  )}
+                </button>
+              </div>
               {!pwMatch && <div className="form-error">Passwords don't match.</div>}
             </div>
             <button className="btn btn-lime btn-block" onClick={handleSetPassword}>
