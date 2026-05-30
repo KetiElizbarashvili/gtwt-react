@@ -503,11 +503,11 @@ img[src^="/speakers/"] {
    13. Top Nav / Topbar — glassmorphism
    --------------------------------------------------------- */
 .topbar {
-  height: 56px;
+  min-height: 56px;
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: 0 var(--space-5);
+  padding: env(safe-area-inset-top) var(--space-5) 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   background: rgba(8, 11, 32, 0.88);
   backdrop-filter: blur(20px);
@@ -901,7 +901,7 @@ img[src^="/speakers/"] {
 .mobile-nav {
   display: none;
   position: fixed;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--space-2));
+  bottom: env(safe-area-inset-bottom, var(--space-2));
   left: var(--space-3);
   right: var(--space-3);
   background: rgba(8, 11, 32, 0.55);
@@ -913,6 +913,10 @@ img[src^="/speakers/"] {
     0 12px 36px rgba(0, 0, 0, 0.45),
     0 1px 0 rgba(255, 255, 255, 0.05) inset;
   z-index: 100;
+}
+body.keyboard-open .mobile-nav { display: none !important; }
+body.keyboard-open .app-shell {
+  height: var(--app-height, 100dvh) !important;
 }
 .mobile-nav-inner {
   display: flex;

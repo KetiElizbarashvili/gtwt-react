@@ -80,13 +80,31 @@ export default function LoginPage() {
       alignItems: 'center',
       justifyContent: 'center',
       padding: 'var(--space-5)',
-      background: `
-        radial-gradient(ellipse 600px 400px at 10% 90%, rgba(193,61,255,0.14) 0%, transparent 70%),
-        radial-gradient(ellipse 500px 350px at 90% 10%, rgba(0,253,255,0.08) 0%, transparent 70%),
-        radial-gradient(ellipse 400px 300px at 50% 50%, rgba(26,60,251,0.06) 0%, transparent 70%),
-        var(--color-bg)`
+      position: 'relative',
+      overflow: 'hidden',
+      background: 'var(--color-bg)'
     }}>
+      <video className="login-bg-video" autoPlay loop muted playsInline>
+        <source src="https://framerusercontent.com/assets/cXjdUsRlxX1lC0UwHRdNAxV4.mp4" type="video/mp4" />
+      </video>
+      <div className="login-bg-overlay" />
+
       <style>{`
+        .login-bg-video {
+          position: absolute; inset: 0;
+          width: 100%; height: 100%;
+          object-fit: cover;
+          z-index: 0;
+        }
+        .login-bg-overlay {
+          position: absolute; inset: 0;
+          z-index: 1;
+          background:
+            radial-gradient(ellipse 600px 400px at 10% 90%, rgba(193,61,255,0.14) 0%, transparent 70%),
+            radial-gradient(ellipse 500px 350px at 90% 10%, rgba(0,253,255,0.08) 0%, transparent 70%),
+            rgba(0,0,22,0.72);
+        }
+        .login-card, .event-badge { position: relative; z-index: 2; }
         .login-card {
           width: 100%; max-width: 420px;
           background: rgba(8,11,32,0.85);
@@ -124,6 +142,12 @@ export default function LoginPage() {
         .btn-loading { position:relative; color:transparent!important; pointer-events:none; }
         .btn-loading::after { content:''; position:absolute; width:18px; height:18px; border:2px solid transparent; border-top-color:var(--color-bg); border-radius:50%; animation:spin 0.7s linear infinite; }
         @keyframes spin { to { transform:rotate(360deg); } }
+
+        /* Mobile: app-feel — login form uses full width, minimal gutters */
+        @media(max-width:768px) {
+          .login-page { padding: var(--space-4) var(--space-3); }
+          .login-card { max-width: 100%; padding: var(--space-6) var(--space-5); }
+        }
       `}</style>
 
       {phase === 'login' ? (

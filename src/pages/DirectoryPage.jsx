@@ -96,13 +96,14 @@ export default function DirectoryPage() {
         .dir-sidebar-nav a,.dir-sidebar-nav button { display:flex; align-items:center; gap:var(--space-3); padding:10px 12px; border-radius:var(--radius-md); color:var(--color-text-muted); font-size:0.875rem; text-decoration:none; cursor:pointer; background:none; border:none; width:100%; transition:background var(--transition),color var(--transition); }
         .dir-sidebar-nav a:hover,.dir-sidebar-nav button:hover { background:rgba(255,255,255,0.04); color:var(--color-text-primary); }
         .dir-sidebar-nav a.active { background:rgba(0,253,255,0.08); color:var(--color-cyan); }
-        .dir-mobile-topbar { display:none; align-items:center; justify-content:center; padding:0 var(--space-4); height:56px; background:var(--color-surface); border-bottom:1px solid var(--color-border); flex-shrink:0; position:sticky; top:0; z-index:20; }
+        .dir-mobile-topbar { display:none; align-items:center; justify-content:center; padding:env(safe-area-inset-top) var(--space-4) 0; min-height:56px; background:var(--color-surface); border-bottom:1px solid var(--color-border); flex-shrink:0; position:sticky; top:0; z-index:20; }
         @media(max-width:640px) {
           .dir-sidebar { display:none; }
           .dir-topbar { display:none; }
           .dir-mobile-topbar { display:flex; }
-          .dir-grid { grid-template-columns:1fr; padding:var(--space-4); padding-bottom:calc(var(--space-4) + 60px + env(safe-area-inset-bottom)); }
-          .dir-header { padding:var(--space-4) var(--space-4) 0; }
+          .dir-grid { grid-template-columns:1fr; padding:var(--space-4) var(--space-3); padding-bottom:calc(var(--space-4) + 60px + env(safe-area-inset-bottom)); }
+          .speaker-card { padding:var(--space-4); }
+          .dir-header { padding:var(--space-4) var(--space-3) 0; }
           .dir-controls { flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; -ms-overflow-style:none; }
           .dir-controls::-webkit-scrollbar { display:none; }
           .dir-search { min-width:0; }
