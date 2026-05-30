@@ -1,4 +1,4 @@
-const CACHE = 'gtw-hub-v2'
+const CACHE = 'gtw-hub-v3'
 
 self.addEventListener('install', () => {
   self.skipWaiting()

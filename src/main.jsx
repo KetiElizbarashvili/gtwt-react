@@ -5,11 +5,17 @@ import './main.css'
 import App from './App.jsx'
 
 function setAppHeight() {
-  const h = window.visualViewport?.height || window.innerHeight
+  const vv = window.visualViewport
+  const h = vv?.height || window.innerHeight
   document.documentElement.style.setProperty('--app-height', `${h}px`)
+  // Keyboard heuristic: visualViewport shrinks well below layout viewport when keyboard opens
+  const layoutH = window.innerHeight
+  const keyboardOpen = vv ? layoutH - h > 100 : false
+  document.body.classList.toggle('keyboard-open', keyboardOpen)
 }
 setAppHeight()
 window.visualViewport?.addEventListener('resize', setAppHeight)
+window.visualViewport?.addEventListener('scroll', setAppHeight)
 window.addEventListener('resize', setAppHeight)
 window.addEventListener('orientationchange', setAppHeight)
 

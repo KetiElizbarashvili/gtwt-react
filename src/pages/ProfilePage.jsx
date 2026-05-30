@@ -61,7 +61,7 @@ export default function ProfilePage() {
         .pf-sidebar-nav a.active { background:rgba(0,253,255,0.08); color:var(--color-cyan); }
         .profile-mobile-topbar {
           display:none; align-items:center; justify-content:flex-end;
-          padding:0 var(--space-4); height:56px;
+          padding:env(safe-area-inset-top) var(--space-4) 0; min-height:56px;
           background:rgba(8,11,32,0.9); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
           border-bottom:1px solid rgba(255,255,255,0.06);
           flex-shrink:0; position:sticky; top:0; z-index:20;
@@ -72,7 +72,8 @@ export default function ProfilePage() {
           .profile-sidebar { display:none; }
           .pf-topbar { display:none; }
           .profile-mobile-topbar { display:flex; }
-          .profile-main { padding:var(--space-4); padding-bottom:calc(var(--space-4) + 60px + env(safe-area-inset-bottom)); }
+          .profile-main { padding:var(--space-4) var(--space-3); padding-bottom:calc(var(--space-4) + 60px + env(safe-area-inset-bottom)); }
+          .profile-card { padding:var(--space-4); }
           .profile-hero { flex-direction:column; align-items:center; text-align:center; }
         }
       `}</style>
